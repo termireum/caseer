@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>POS Pro</title>
+<title>Caseer</title>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 <style>
 /* ===== DESIGN TOKENS (iOS-style) ===== */
@@ -774,7 +774,7 @@ canvas#sales-chart { width: 100% !important; max-height: 180px; }
     </div>
 
     <div class="app-version">
-      POS Pro · v2.0.0<br>
+      Caseer · v2.0.0<br>
       <span id="lbl-data-local">Data tersimpan di perangkat ini</span>
     </div>
   </div>
@@ -1699,7 +1699,7 @@ function openModal(type) {
       ['Backup & Restore','In Settings → Export & Import → backup to JSON then re-import if needed.'],
     ];
     body.innerHTML = `
-      <div class="info-block"><h4>${lang==='ID'?'Selamat Datang di POS Pro':'Welcome to POS Pro'}</h4>
+      <div class="info-block"><h4>${lang==='ID'?'Selamat Datang di Caseer':'Welcome to Caseer'}</h4>
         <p>${lang==='ID'?'Ikuti langkah-langkah di bawah untuk memulai.':'Follow the steps below to get started.'}</p>
       </div>
       <div class="card">
@@ -1716,7 +1716,7 @@ function openModal(type) {
     body.innerHTML = `
       <div class="info-block">
         <h4>${lang==='ID'?'Punya ide fitur baru?':'Have a feature idea?'}</h4>
-        <p>${lang==='ID'?'Kami senang mendengar masukan Anda untuk membuat POS Pro lebih baik.':'We love hearing your feedback to make POS Pro better.'}</p>
+        <p>${lang==='ID'?'Kami senang mendengar masukan Anda untuk membuat Caseer lebih baik.':'We love hearing your feedback to make Caseer better.'}</p>
       </div>
       <div class="field-wrap">
         <div class="field-label">${lang==='ID'?'Judul Fitur':'Feature Title'}</div>
@@ -1761,19 +1761,19 @@ function openModal(type) {
     title.textContent = t('lbl_about');
     body.innerHTML = `
       <div style="text-align:center;padding:20px 0 16px;">
-        <div style="font-size:22px;font-weight:800;letter-spacing:-0.5px;">POS Pro</div>
+        <div style="font-size:22px;font-weight:800;letter-spacing:-0.5px;">Caseer</div>
         <div style="font-size:14px;color:var(--text3);margin-top:4px;">Version 2.0.0</div>
       </div>
       <div class="info-block">
         <p>${lang==='ID'
-          ? 'POS Pro adalah aplikasi kasir modern untuk usaha kecil dan menengah. Mudah digunakan, dan bekerja sepenuhnya offline.'
-          : 'POS Pro is a modern point-of-sale app for small and medium businesses. Easy to use, and works completely offline.'
+          ? 'Caseer adalah aplikasi kasir modern untuk usaha kecil dan menengah. Mudah digunakan, dan bekerja sepenuhnya offline.'
+          : 'Caseer is a modern point-of-sale app for small and medium businesses. Easy to use, and works completely offline.'
         }</p>
       </div>
       <div class="card">
         <div class="list-row"><div class="left"><div class="row-label">${lang==='ID'?'Versi':'Version'}</div></div><div class="right" style="color:var(--text2);font-weight:600;">2.0.0</div></div>
         <div class="divider"></div>
-        <div class="list-row"><div class="left"><div class="row-label">Developer</div></div><div class="right" style="color:var(--text2);">POS Pro Team</div></div>
+        <div class="list-row"><div class="left"><div class="row-label">Developer</div></div><div class="right" style="color:var(--text2);">Caseer Team</div></div>
         <div class="divider"></div>
         <div class="list-row"><div class="left"><div class="row-label">Email</div></div><div class="right" style="color:var(--blue);font-size:14px;">termireum@gmail.com</div></div>
         <div class="divider"></div>
@@ -1787,8 +1787,8 @@ function openModal(type) {
       <div class="card" style="padding:16px;border-radius:var(--r-xl);">
         <p style="font-size:15px;font-weight:700;margin:0 0 10px;">${lang==='ID'?'Penafian':'Disclaimer'}</p>
         <p style="font-size:14px;color:var(--text2);line-height:1.7;margin:0 0 12px;">${lang==='ID'
-          ? 'POS Pro disediakan "sebagaimana adanya" tanpa jaminan apapun, baik tersurat maupun tersirat. Penggunaan aplikasi ini sepenuhnya merupakan risiko pengguna.'
-          : 'POS Pro is provided "as is" without any warranties, either expressed or implied. Use of this application is entirely at the user\'s own risk.'
+          ? 'Caseer disediakan "sebagaimana adanya" tanpa jaminan apapun, baik tersurat maupun tersirat. Penggunaan aplikasi ini sepenuhnya merupakan risiko pengguna.'
+          : 'Caseer is provided "as is" without any warranties, either expressed or implied. Use of this application is entirely at the user\'s own risk.'
         }</p>
         <p style="font-size:14px;color:var(--text2);line-height:1.7;margin:0 0 12px;">${lang==='ID'
           ? 'Pengembang tidak bertanggung jawab atas kerugian data, kehilangan keuntungan, atau kerusakan lainnya yang mungkin timbul dari penggunaan aplikasi ini.'
@@ -1832,11 +1832,11 @@ function openModal(type) {
         <p style="font-size:15px;font-weight:700;margin:0 0 10px;">${lang==='ID'?'Syarat & Ketentuan Penggunaan':'Terms of Use'}</p>
         ${[
           [lang==='ID'?'1. Penerimaan Syarat':'1. Acceptance of Terms',
-           lang==='ID'?'Dengan menggunakan POS Pro, Anda menyetujui syarat dan ketentuan ini.'
-                      :'By using POS Pro, you agree to these terms and conditions.'],
+           lang==='ID'?'Dengan menggunakan Caseer, Anda menyetujui syarat dan ketentuan ini.'
+                      :'By using Caseer, you agree to these terms and conditions.'],
           [lang==='ID'?'2. Penggunaan yang Diizinkan':'2. Permitted Use',
-           lang==='ID'?'POS Pro dirancang untuk penggunaan bisnis yang sah. Anda bertanggung jawab memastikan penggunaan aplikasi sesuai dengan peraturan yang berlaku.'
-                      :'POS Pro is designed for lawful business use. You are responsible for ensuring use complies with applicable regulations.'],
+           lang==='ID'?'Caseer dirancang untuk penggunaan bisnis yang sah. Anda bertanggung jawab memastikan penggunaan aplikasi sesuai dengan peraturan yang berlaku.'
+                      :'Caseer is designed for lawful business use. You are responsible for ensuring use complies with applicable regulations.'],
           [lang==='ID'?'3. Tanggung Jawab Data':'3. Data Responsibility',
            lang==='ID'?'Pengguna bertanggung jawab penuh atas data yang dimasukkan dan disimpan dalam aplikasi. Lakukan backup data secara berkala.'
                       :'Users are fully responsible for data entered and stored in the application. Back up your data regularly.'],
@@ -2060,8 +2060,8 @@ function submitFeatureRequest() {
   const ft = $('feat-title')?.value.trim();
   const fd = $('feat-desc')?.value.trim();
   if (!ft) { showFieldError('feat-title'); return; }
-  const subject = encodeURIComponent('POS Pro - Feature Request: ' + ft);
-  const body = encodeURIComponent((fd || '') + '\n\n-- Sent from POS Pro v2.0.0');
+  const subject = encodeURIComponent('Caseer - Feature Request: ' + ft);
+  const body = encodeURIComponent((fd || '') + '\n\n-- Sent from Caseer v2.0.0');
   window.location.href = `mailto:termireum@gmail.com?subject=${subject}&body=${body}`;
 }
 
@@ -2098,7 +2098,7 @@ function exportPDF() {
   const now = new Date().toLocaleDateString(lang==='ID'?'id-ID':'en-US', {year:'numeric',month:'long',day:'numeric'});
 
   const printContent = `<!DOCTYPE html><html><head><meta charset="UTF-8">
-  <title>POS Pro Report</title>
+  <title>Caseer Report</title>
   <style>
     body { font-family: -apple-system, Arial, sans-serif; margin: 0; padding: 24px; font-size: 12px; color: #000; }
     h1 { font-size: 20px; font-weight: 800; margin: 0 0 2px; }
@@ -2119,7 +2119,7 @@ function exportPDF() {
   </head><body>
   <div class="header">
     <div class="biz">${escHtml(bizName)}</div>
-    <h1>POS Pro — ${lang==='ID'?'Laporan Transaksi':'Transaction Report'}</h1>
+    <h1>Caseer — ${lang==='ID'?'Laporan Transaksi':'Transaction Report'}</h1>
     <div class="meta">${lang==='ID'?'Dicetak':'Printed'}: ${now} · ${db.sales.length} ${lang==='ID'?'transaksi':'transactions'}</div>
   </div>
   <div class="summary">
@@ -2134,7 +2134,7 @@ function exportPDF() {
     <tr class="total-row"><td colspan="2">${lang==='ID'?'TOTAL':'TOTAL'}</td><td>Rp ${totalRev.toLocaleString('id-ID')}</td><td></td><td></td></tr>
     </tbody>
   </table>
-  <div class="footer">POS Pro v2.0.0 · termireum@gmail.com</div>
+  <div class="footer">Caseer v2.0.0 · termireum@gmail.com</div>
   </body></html>`;
 
   const win = window.open('', '_blank');
