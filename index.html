@@ -1,0 +1,2180 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>POS Pro</title>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<style>
+/* ===== DESIGN TOKENS (iOS-style) ===== */
+:root {
+  --blue: #007AFF;
+  --blue-light: rgba(0,122,255,0.12);
+  --blue-mid: rgba(0,122,255,0.2);
+  --green: #34C759;
+  --green-light: rgba(52,199,89,0.12);
+  --red: #FF3B30;
+  --red-light: rgba(255,59,48,0.12);
+  --orange: #FF9500;
+  --purple: #AF52DE;
+  --teal: #32ADE6;
+  --indigo: #5856D6;
+  --pink: #FF2D55;
+  --bg: #F2F2F7;
+  --bg2: #E5E5EA;
+  --card: #FFFFFF;
+  --card2: #F2F2F7;
+  --card3: #E5E5EA;
+  --text: #000000;
+  --text2: #3C3C43;
+  --text3: #8E8E93;
+  --text4: #AEAEB2;
+  --sep: rgba(60,60,67,0.12);
+  --sep2: rgba(60,60,67,0.06);
+  --blur: rgba(242,242,247,0.92);
+  --shadow-xs: 0 0.5px 2px rgba(0,0,0,0.04);
+  --shadow-sm: 0 1px 4px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 20px rgba(0,0,0,0.09), 0 2px 6px rgba(0,0,0,0.05);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,0.13), 0 4px 12px rgba(0,0,0,0.07);
+  --r-xs: 6px;
+  --r-sm: 10px;
+  --r-md: 14px;
+  --r-lg: 20px;
+  --r-xl: 24px;
+  --r-2xl: 32px;
+  --nav-h: 82px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+[data-theme="dark"] {
+  --bg: #000000;
+  --bg2: #1C1C1E;
+  --card: #1C1C1E;
+  --card2: #2C2C2E;
+  --card3: #3A3A3C;
+  --text: #FFFFFF;
+  --text2: #EBEBF5;
+  --text3: #8E8E93;
+  --text4: #636366;
+  --sep: rgba(84,84,88,0.65);
+  --sep2: rgba(84,84,88,0.3);
+  --blur: rgba(28,28,30,0.92);
+  --shadow-xs: 0 0.5px 2px rgba(0,0,0,0.3);
+  --shadow-sm: 0 1px 4px rgba(0,0,0,0.35);
+  --shadow-md: 0 4px 20px rgba(0,0,0,0.45);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,0.55);
+}
+
+/* ===== RESET ===== */
+*, *::before, *::after { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html { height: 100%; }
+body {
+  margin: 0;
+  font-family: -apple-system, 'SF Pro Display', 'SF Pro Text', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  height: 100svh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: background 0.3s, color 0.3s;
+  -webkit-font-smoothing: antialiased;
+}
+button { font-family: inherit; cursor: pointer; }
+input, select, textarea { font-family: inherit; }
+* { -webkit-overflow-scrolling: touch; }
+
+/* ===== LAYOUT ===== */
+.viewport { flex: 1; position: relative; overflow: hidden; min-height: 0; }
+.view {
+  position: absolute; inset: 0;
+  overflow-y: auto; overflow-x: hidden;
+  opacity: 0; visibility: hidden; pointer-events: none;
+  transform: translateY(10px);
+  transition: opacity 0.22s ease, transform 0.22s ease, visibility 0.22s;
+  padding-bottom: 32px;
+}
+.view.active { opacity: 1; visibility: visible; pointer-events: auto; transform: translateY(0); }
+
+/* ===== PAGE HEADERS ===== */
+.page-header {
+  padding: 16px 20px 10px;
+  position: sticky; top: 0; z-index: 20;
+  background: var(--blur);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 0.5px solid var(--sep);
+}
+.page-header h1 { margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.5px; color: var(--text); line-height: 1.2; }
+.biz-name { font-size: 12px; font-weight: 600; color: var(--text3); margin-bottom: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* ===== BOTTOM NAV ===== */
+nav {
+  height: var(--nav-h);
+  background: var(--blur);
+  backdrop-filter: saturate(180%) blur(25px);
+  -webkit-backdrop-filter: saturate(180%) blur(25px);
+  border-top: 0.5px solid var(--sep);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  padding-bottom: var(--safe-bottom);
+  position: relative; z-index: 100; flex-shrink: 0;
+}
+.tab {
+  border: none; background: none;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+  color: var(--text3); padding: 0;
+  transition: color 0.18s;
+  position: relative;
+}
+.tab svg { width: 24px; height: 24px; transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1); }
+.tab span { font-size: 10px; font-weight: 500; letter-spacing: -0.1px; }
+.tab.active { color: var(--blue); }
+.tab.active svg { transform: scale(1.08); }
+.tab:active svg { transform: scale(0.88); }
+
+/* ===== CARDS & LISTS ===== */
+.card { background: var(--card); border-radius: var(--r-xl); border: 0.5px solid var(--sep); box-shadow: var(--shadow-sm); overflow: hidden; }
+.section { margin: 16px 16px 0; }
+.section-title { font-size: 13px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.4px; margin: 0 0 8px 4px; }
+
+.list-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 13px 16px; border-bottom: 0.5px solid var(--sep);
+  gap: 12px; min-height: 50px; transition: background 0.1s;
+}
+.list-row:last-child { border-bottom: none; }
+.list-row.tappable { cursor: pointer; }
+.list-row.tappable:active { background: var(--card2); }
+.list-row .left { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
+.list-row .right { display: flex; align-items: center; gap: 6px; color: var(--text3); flex-shrink: 0; }
+.row-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.row-icon svg { width: 17px; height: 17px; color: white; }
+.row-label { font-size: 16px; color: var(--text); }
+.row-sub { font-size: 13px; color: var(--text3); margin-top: 1px; }
+.chevron { opacity: 0.35; }
+.chevron svg { width: 15px; height: 15px; }
+
+/* ===== FORM ELEMENTS ===== */
+.field-wrap { margin-bottom: 10px; }
+.field-label { font-size: 13px; font-weight: 500; color: var(--text3); margin-bottom: 6px; margin-left: 2px; }
+.fld {
+  background: var(--card2); border: 1px solid var(--sep);
+  border-radius: var(--r-md); padding: 13px 16px;
+  color: var(--text); font-size: 16px; width: 100%; outline: none;
+  transition: border-color 0.18s, box-shadow 0.18s;
+  -webkit-appearance: none; appearance: none;
+}
+.fld:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(0,122,255,0.15); background: var(--card); }
+.fld::placeholder { color: var(--text3); opacity: 0.6; }
+select.fld { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%238E8E93' d='M8 10.94L2.06 5h11.88z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; background-size: 12px; padding-right: 38px; }
+
+/* ===== BUTTONS ===== */
+.btn {
+  border: none; border-radius: var(--r-md);
+  padding: 14px 20px; font-size: 16px; font-weight: 600;
+  width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: opacity 0.15s, transform 0.12s;
+  -webkit-appearance: none; appearance: none;
+}
+.btn:active { opacity: 0.72; transform: scale(0.975); }
+.btn-primary { background: var(--blue); color: white; }
+.btn-success { background: var(--green); color: white; }
+.btn-danger { background: var(--red); color: white; }
+.btn-ghost { background: var(--card2); color: var(--text); border: 0.5px solid var(--sep); }
+.btn-sm { padding: 9px 14px; font-size: 14px; font-weight: 600; border-radius: var(--r-sm); }
+.btn svg { width: 17px; height: 17px; }
+
+/* ===== CATEGORIES FILTER ===== */
+.cat-scroll { display: flex; gap: 8px; overflow-x: auto; padding: 10px 16px 2px; scrollbar-width: none; -ms-overflow-style: none; }
+.cat-scroll::-webkit-scrollbar { display: none; }
+.cat-chip {
+  background: var(--card2); border: 0.5px solid var(--sep);
+  border-radius: 20px; padding: 6px 14px;
+  font-size: 13px; font-weight: 600; color: var(--text3);
+  white-space: nowrap; cursor: pointer;
+  transition: all 0.15s; border: none; flex-shrink: 0;
+}
+.cat-chip.active { background: var(--blue); color: white; }
+.cat-chip:active { transform: scale(0.95); }
+
+/* ===== POS GRID ===== */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 10px;
+  padding: 10px 16px 130px;
+}
+.item-card {
+  background: var(--card); border-radius: var(--r-xl); padding: 12px 8px 10px;
+  text-align: center; border: 0.5px solid var(--sep);
+  position: relative; cursor: pointer; box-shadow: var(--shadow-sm);
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+  -webkit-user-select: none; user-select: none;
+}
+.item-card:active { transform: scale(0.93); box-shadow: none; }
+.item-card.in-cart { border-color: var(--blue); box-shadow: 0 0 0 2px rgba(0,122,255,0.22), var(--shadow-sm); }
+.item-img-wrap {
+  width: 52px; height: 52px; margin: 0 auto 8px;
+  border-radius: 13px; overflow: hidden; background: var(--card2);
+  display: flex; align-items: center; justify-content: center;
+}
+.item-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
+.item-img-wrap svg { width: 22px; height: 22px; color: var(--text3); opacity: 0.35; }
+.item-name { font-size: 11.5px; font-weight: 600; color: var(--text); margin-bottom: 2px; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.item-price { font-size: 11px; color: var(--blue); font-weight: 600; }
+.item-stock-badge { font-size: 10px; color: var(--text3); margin-top: 2px; }
+.badge {
+  position: absolute; top: 7px; right: 7px;
+  background: var(--blue); color: white; border-radius: 20px;
+  padding: 2px 6px; font-size: 10px; font-weight: 700;
+  min-width: 18px; text-align: center;
+}
+.low-stock { position: absolute; top: 7px; left: 7px; background: var(--orange); color: white; border-radius: 20px; padding: 1px 5px; font-size: 9px; font-weight: 700; }
+
+/* ===== CHECKOUT BAR ===== */
+.checkout-bar {
+  position: fixed;
+  bottom: calc(var(--nav-h) + 12px);
+  left: 16px; right: 16px;
+  background: var(--blue); color: white;
+  padding: 14px 18px; border-radius: var(--r-xl);
+  display: flex; justify-content: space-between; align-items: center;
+  z-index: 50;
+  box-shadow: 0 8px 32px rgba(0,122,255,0.4), 0 2px 8px rgba(0,122,255,0.2);
+  cursor: pointer;
+  transform: translateY(0);
+  transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), opacity 0.2s;
+}
+.checkout-bar.hidden { transform: translateY(120px); opacity: 0; pointer-events: none; }
+.checkout-bar:active { transform: scale(0.97); }
+.bar-left { display: flex; align-items: center; gap: 10px; }
+.bar-qty { background: rgba(255,255,255,0.25); border-radius: 8px; padding: 3px 9px; font-size: 13px; font-weight: 700; }
+.bar-label { font-size: 14px; font-weight: 600; }
+.bar-total { font-size: 16px; font-weight: 700; }
+
+/* ===== EMPTY STATE ===== */
+.empty-state {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; padding: 50px 30px; text-align: center;
+  color: var(--text3); gap: 10px;
+}
+.empty-icon { width: 60px; height: 60px; background: var(--card2); border-radius: 18px; display: flex; align-items: center; justify-content: center; margin-bottom: 2px; }
+.empty-icon svg { width: 28px; height: 28px; opacity: 0.4; }
+.empty-state h3 { margin: 0; font-size: 17px; font-weight: 600; color: var(--text2); }
+.empty-state p { margin: 0; font-size: 15px; line-height: 1.5; }
+
+/* ===== STOCK VIEW ===== */
+.add-product-form { padding: 12px 16px 0; }
+.img-picker {
+  width: 68px; height: 68px; border-radius: 14px;
+  background: var(--card2); border: 1.5px dashed var(--sep);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; overflow: hidden; flex-shrink: 0;
+  transition: border-color 0.18s;
+}
+.img-picker:active { opacity: 0.7; }
+.img-picker svg { width: 24px; height: 24px; color: var(--blue); }
+.img-picker img { width: 100%; height: 100%; object-fit: cover; }
+.form-row { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 10px; }
+.form-row .form-fields { flex: 1; }
+.form-fields-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.stock-item-img { width: 40px; height: 40px; border-radius: 10px; object-fit: cover; flex-shrink: 0; }
+.stock-item-no-img { width: 40px; height: 40px; border-radius: 10px; background: var(--card2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.stock-item-no-img svg { width: 17px; height: 17px; color: var(--text3); opacity: 0.5; }
+.delete-btn { width: 30px; height: 30px; border-radius: 50%; background: var(--red-light); border: none; color: var(--red); display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: background 0.15s; }
+.delete-btn:active { background: rgba(255,59,48,0.3); }
+.delete-btn svg { width: 13px; height: 13px; }
+.edit-btn { width: 30px; height: 30px; border-radius: 50%; background: var(--blue-light); border: none; color: var(--blue); display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: background 0.15s; }
+.edit-btn svg { width: 13px; height: 13px; }
+
+/* ===== STOCK INDICATOR ===== */
+.stock-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 4px; }
+.stock-ok { background: var(--green); }
+.stock-low { background: var(--orange); }
+.stock-out { background: var(--red); }
+
+/* ===== REPORT VIEW ===== */
+.report-summary { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 14px 16px 0; }
+.summary-card { background: var(--card); border-radius: var(--r-xl); padding: 14px; border: 0.5px solid var(--sep); box-shadow: var(--shadow-sm); }
+.summary-label { font-size: 11px; color: var(--text3); font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 4px; }
+.summary-value { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; color: var(--text); }
+.summary-value.blue { color: var(--blue); }
+.summary-value.green { color: var(--green); }
+.summary-value.sm { font-size: 16px; }
+
+/* Filter tabs for report */
+.filter-tabs {
+  display: flex; gap: 0; margin: 14px 16px 0;
+  background: var(--card2); border-radius: 10px; padding: 2px;
+  border: 0.5px solid var(--sep);
+}
+.filter-tab {
+  flex: 1; border: none; background: none;
+  padding: 8px 4px; font-size: 13px; font-weight: 600;
+  color: var(--text3); border-radius: 8px;
+  transition: all 0.15s;
+}
+.filter-tab.active { background: var(--card); color: var(--text); box-shadow: var(--shadow-xs); }
+
+/* Chart container */
+.chart-container {
+  margin: 14px 16px 0;
+  background: var(--card); border-radius: var(--r-xl);
+  border: 0.5px solid var(--sep); box-shadow: var(--shadow-sm);
+  padding: 16px;
+  overflow: hidden;
+}
+.chart-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
+.chart-title { font-size: 15px; font-weight: 700; color: var(--text); }
+.chart-sub { font-size: 12px; color: var(--text3); margin-top: 2px; }
+.chart-legend { display: flex; gap: 14px; margin-top: 4px; }
+.legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text3); font-weight: 500; }
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+canvas#sales-chart { width: 100% !important; max-height: 180px; }
+
+/* Transaction history */
+.sale-card { background: var(--card); border-radius: var(--r-lg); border: 0.5px solid var(--sep); box-shadow: var(--shadow-xs); margin-bottom: 8px; overflow: hidden; }
+.sale-card-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px 10px; }
+.sale-total { font-size: 16px; font-weight: 700; color: var(--text); }
+.sale-date { font-size: 12px; color: var(--text3); margin-top: 2px; }
+.sale-method-badge { padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+.badge-cash { background: var(--green-light); color: var(--green); }
+.badge-qris { background: var(--blue-light); color: var(--blue); }
+.sale-desc { font-size: 12px; color: var(--text3); padding: 0 14px 12px; line-height: 1.5; border-top: 0.5px solid var(--sep); padding-top: 8px; }
+
+/* ===== SETTINGS VIEW ===== */
+.settings-section { margin: 16px 16px 0; }
+.icon-blue { background: var(--blue); }
+.icon-purple { background: var(--purple); }
+.icon-green { background: var(--green); }
+.icon-orange { background: var(--orange); }
+.icon-red { background: var(--red); }
+.icon-gray { background: #8E8E93; }
+.icon-teal { background: var(--teal); }
+.icon-indigo { background: var(--indigo); }
+.icon-pink { background: var(--pink); }
+.icon-brown { background: #A2845E; }
+.app-version { text-align: center; color: var(--text3); font-size: 13px; padding: 20px 20px 10px; line-height: 1.7; }
+
+/* ===== MODAL / SHEET ===== */
+.overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.48);
+  z-index: 1000; display: flex; align-items: flex-end;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.overlay.active { opacity: 1; pointer-events: auto; }
+.sheet {
+  width: 100%; background: var(--card);
+  border-radius: 28px 28px 0 0;
+  padding: 0 0 var(--safe-bottom);
+  transform: translateY(100%);
+  transition: transform 0.36s cubic-bezier(0.32, 0.72, 0, 1);
+  max-height: 92vh; display: flex; flex-direction: column; overflow: hidden;
+}
+.overlay.active .sheet { transform: translateY(0); }
+.sheet-handle { width: 36px; height: 5px; background: var(--card3); border-radius: 3px; margin: 10px auto 0; flex-shrink: 0; }
+.sheet-header { padding: 14px 18px 12px; border-bottom: 0.5px solid var(--sep); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.sheet-title { font-size: 18px; font-weight: 700; }
+.sheet-close { width: 30px; height: 30px; border-radius: 50%; background: var(--card2); border: none; color: var(--text3); display: flex; align-items: center; justify-content: center; }
+.sheet-close svg { width: 15px; height: 15px; }
+.sheet-body { padding: 16px 18px; overflow-y: auto; flex: 1; }
+
+/* ===== CART SHEET ===== */
+.cart-item-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 0.5px solid var(--sep); }
+.cart-item-row:last-child { border-bottom: none; }
+.cart-item-img { width: 42px; height: 42px; border-radius: 10px; object-fit: cover; background: var(--card2); flex-shrink: 0; }
+.cart-item-info { flex: 1; min-width: 0; }
+.cart-item-name { font-size: 14px; font-weight: 600; color: var(--text); }
+.cart-item-price { font-size: 12px; color: var(--text3); margin-top: 2px; }
+.qty-control { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.qty-btn { width: 28px; height: 28px; border-radius: 50%; border: none; background: var(--blue-light); color: var(--blue); display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 600; line-height: 1; transition: background 0.15s; }
+.qty-btn:active { background: rgba(0,122,255,0.28); }
+.qty-num { font-size: 15px; font-weight: 700; min-width: 20px; text-align: center; }
+.cart-total-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 0 6px; border-top: 0.5px solid var(--sep); margin-top: 6px; }
+.cart-total-label { font-size: 17px; font-weight: 600; color: var(--text2); }
+.cart-total-val { font-size: 22px; font-weight: 800; color: var(--blue); }
+.discount-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+.discount-row input { flex: 1; }
+.discount-row select { width: 80px; flex-shrink: 0; padding: 13px 10px; }
+
+/* Payment method */
+.pay-methods { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0; }
+.pay-method { background: var(--card2); border-radius: var(--r-md); padding: 14px; border: 1.5px solid var(--sep); cursor: pointer; text-align: center; transition: all 0.15s; font-size: 14px; font-weight: 600; color: var(--text2); }
+.pay-method.selected { border-color: var(--blue); background: var(--blue-light); color: var(--blue); }
+.pay-method svg { width: 22px; height: 22px; display: block; margin: 0 auto 5px; }
+
+/* Cash input */
+.cash-section { margin: 4px 0 10px; }
+.kembalian-row { background: var(--green-light); border-radius: var(--r-md); padding: 14px 16px; display: flex; justify-content: space-between; margin-top: 8px; }
+.kembalian-label { font-size: 14px; color: var(--text3); }
+.kembalian-val { font-size: 16px; font-weight: 700; color: var(--green); }
+
+/* QRIS */
+.qris-box { background: white; border-radius: var(--r-lg); border: 1px solid var(--sep); padding: 12px; text-align: center; margin: 10px 0; }
+.qris-box img { max-width: 100%; border-radius: 8px; }
+.qris-label { font-size: 10px; font-weight: 700; letter-spacing: 1px; color: #8E8E93; margin: 0 0 8px; text-transform: uppercase; }
+.qris-upload-area { border: 2px dashed var(--sep); border-radius: var(--r-lg); padding: 24px; text-align: center; cursor: pointer; color: var(--text3); transition: border-color 0.18s; margin: 10px 0; }
+.qris-upload-area:active { border-color: var(--blue); }
+.qris-upload-area svg { width: 30px; height: 30px; margin-bottom: 8px; opacity: 0.5; display: block; margin: 0 auto 8px; }
+.qris-upload-area p { margin: 0; font-size: 14px; }
+
+/* Toast */
+.toast { position: fixed; top: 24px; left: 50%; transform: translateX(-50%) translateY(-100px); background: rgba(44,44,46,0.96); color: white; padding: 11px 18px; border-radius: 100px; font-size: 14px; font-weight: 600; z-index: 9999; display: flex; align-items: center; gap: 8px; transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1); white-space: nowrap; box-shadow: var(--shadow-lg); max-width: calc(100vw - 40px); }
+.toast.show { transform: translateX(-50%) translateY(0); }
+.toast svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+/* Confirm */
+.confirm-btns { display: flex; gap: 10px; margin-top: 4px; }
+.confirm-btns .btn { flex: 1; }
+
+/* Print */
+@media print {
+  body * { visibility: hidden; }
+  #print-area, #print-area * { visibility: visible; }
+  #print-area { position: fixed; top: 0; left: 0; right: 0; font-family: monospace; font-size: 12px; padding: 20px; }
+}
+#print-area { display: none; }
+
+/* Divider */
+.divider { height: 0.5px; background: var(--sep); margin: 0; }
+
+/* Numpad */
+.numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 10px 0; }
+.num-key { background: var(--card2); border: none; border-radius: var(--r-md); padding: 16px; font-size: 18px; font-weight: 600; color: var(--text); transition: background 0.12s, transform 0.1s; text-align: center; }
+.num-key:active { background: var(--sep); transform: scale(0.93); }
+.num-key.span2 { grid-column: span 2; }
+.num-key.danger { color: var(--red); }
+
+/* Info blocks */
+.info-block { background: var(--blue-light); border-radius: var(--r-md); padding: 14px; margin-bottom: 12px; }
+.info-block p { margin: 0; font-size: 14px; color: var(--text2); line-height: 1.6; }
+.info-block h4 { margin: 0 0 6px; font-size: 14px; font-weight: 700; color: var(--blue); }
+
+/* Help steps */
+.help-step { display: flex; gap: 12px; padding: 12px 0; border-bottom: 0.5px solid var(--sep); }
+.help-step:last-child { border-bottom: none; }
+.step-num { width: 28px; height: 28px; border-radius: 50%; background: var(--blue); color: white; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+.step-text h4 { margin: 0 0 3px; font-size: 15px; font-weight: 600; color: var(--text); }
+.step-text p { margin: 0; font-size: 13px; color: var(--text3); line-height: 1.5; }
+
+/* Animations */
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.anim-in { animation: fadeInUp 0.22s ease forwards; }
+
+/* Discount badge */
+.disc-badge { position: absolute; top: 7px; left: 7px; background: var(--red); color: white; border-radius: 20px; padding: 1px 5px; font-size: 9px; font-weight: 700; }
+
+/* ===== RESPONSIVE ===== */
+@media (min-width: 480px) {
+  .grid { grid-template-columns: repeat(auto-fill, minmax(115px, 1fr)); }
+  .report-summary { grid-template-columns: repeat(4, 1fr); }
+  .section, .settings-section { margin-left: 20px; margin-right: 20px; }
+  .chart-container { margin-left: 20px; margin-right: 20px; }
+  .filter-tabs { margin-left: 20px; margin-right: 20px; }
+  .report-summary { margin-left: 20px; margin-right: 20px; }
+}
+@media (min-width: 768px) {
+  body { max-width: 480px; margin: 0 auto; border-left: 0.5px solid var(--sep); border-right: 0.5px solid var(--sep); }
+  .checkout-bar { max-width: 440px; left: 50%; right: auto; transform: translateX(-50%) translateY(0); }
+  .checkout-bar.hidden { transform: translateX(-50%) translateY(120px); }
+  .toast { top: 30px; }
+}
+@media (orientation: landscape) and (max-height: 500px) {
+  :root { --nav-h: 56px; }
+  .page-header { padding: 10px 16px 8px; }
+  .page-header h1 { font-size: 22px; }
+  .grid { padding-bottom: 80px; }
+  .checkout-bar { bottom: calc(var(--nav-h) + 8px); }
+}
+@media (prefers-color-scheme: dark) {
+  /* handled via JS */
+}
+</style>
+</head>
+<body>
+
+<div class="viewport">
+
+  <!-- ===== KASIR / POS ===== -->
+  <div id="view-pos" class="view active">
+    <div class="page-header">
+      <div class="biz-name" id="disp-biz"></div>
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h1 id="lbl-kasir">Kasir</h1>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button class="btn btn-ghost btn-sm" style="width:auto;gap:5px;padding:7px 11px;" onclick="openModal('discount-quick')" id="btn-disc-global" title="Diskon">
+            <i data-lucide="tag"></i>
+          </button>
+          <button class="btn btn-ghost btn-sm" style="width:auto;gap:5px;padding:7px 11px;" onclick="openModal('cart')" id="mini-cart-btn">
+            <i data-lucide="shopping-cart"></i>
+            <span id="mini-cart-count" style="color:var(--blue);font-weight:700">0</span>
+          </button>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:8px;">
+        <div style="flex:1;position:relative;">
+          <i data-lucide="search" style="position:absolute;left:11px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--text3);pointer-events:none;"></i>
+          <input class="fld" id="pos-search" placeholder="Cari produk..." oninput="filterPOS(this.value)" style="padding-left:34px;padding-top:10px;padding-bottom:10px;font-size:15px;">
+        </div>
+      </div>
+    </div>
+    <div class="cat-scroll" id="cat-scroll"></div>
+    <div id="pos-grid" class="grid"></div>
+    <div class="checkout-bar hidden" id="checkout-bar" onclick="openModal('cart')">
+      <div class="bar-left">
+        <span class="bar-qty" id="bar-qty">0</span>
+        <span class="bar-label" id="bar-lbl">Lihat Keranjang</span>
+      </div>
+      <span class="bar-total" id="bar-total">Rp 0</span>
+    </div>
+  </div>
+
+  <!-- ===== STOK ===== -->
+  <div id="view-stok" class="view">
+    <div class="page-header">
+      <h1 id="lbl-stok">Stok</h1>
+    </div>
+    <div class="add-product-form">
+      <div class="section-title" style="margin-left:0;margin-bottom:10px;" id="lbl-tambah-produk">Tambah Produk Baru</div>
+      <div class="form-row">
+        <div class="img-picker" id="img-picker" onclick="document.getElementById('in-img').click()">
+          <i data-lucide="image-plus"></i>
+        </div>
+        <input type="file" id="in-img" hidden accept="image/*" onchange="previewImg(this)">
+        <div class="form-fields">
+          <div class="field-wrap" style="margin-bottom:8px;">
+            <input type="text" id="in-name" class="fld" placeholder="Nama Produk" style="padding:11px 14px;">
+          </div>
+          <div class="form-fields-grid">
+            <input type="number" id="in-price" class="fld" placeholder="Harga" inputmode="numeric" style="padding:11px 14px;">
+            <input type="number" id="in-stock" class="fld" placeholder="Stok" inputmode="numeric" style="padding:11px 14px;">
+          </div>
+          <div style="margin-top:8px;">
+            <select id="in-cat" class="fld" style="padding:11px 14px;"></select>
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="addItem()" id="lbl-btn-tambah" style="margin-bottom:6px;">
+        <i data-lucide="plus-circle"></i> Tambah Produk
+      </button>
+    </div>
+    <div class="section" style="margin-top:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <div class="section-title" id="lbl-daftar-produk" style="margin:0;">Daftar Produk</div>
+        <button class="btn btn-ghost btn-sm" style="width:auto;padding:6px 12px;gap:5px;" onclick="openModal('manage-cats')">
+          <i data-lucide="tag"></i>
+          <span id="lbl-manage-cats">Kategori</span>
+        </button>
+      </div>
+      <div class="card" id="inv-list"></div>
+    </div>
+  </div>
+
+  <!-- ===== LAPORAN ===== -->
+  <div id="view-laporan" class="view">
+    <div class="page-header">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <h1 id="lbl-laporan">Laporan</h1>
+        <div style="display:flex;gap:6px;">
+          <button class="btn btn-ghost btn-sm" style="width:auto;padding:7px 11px;gap:5px;" onclick="openModal('export-report')" id="lbl-export">
+            <i data-lucide="download"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter tabs -->
+    <div class="filter-tabs" id="filter-tabs">
+      <button class="filter-tab active" onclick="setReportFilter('daily',this)" id="ftab-daily">Harian</button>
+      <button class="filter-tab" onclick="setReportFilter('weekly',this)" id="ftab-weekly">Mingguan</button>
+      <button class="filter-tab" onclick="setReportFilter('monthly',this)" id="ftab-monthly">Bulanan</button>
+      <button class="filter-tab" onclick="setReportFilter('yearly',this)" id="ftab-yearly">Tahunan</button>
+    </div>
+
+    <!-- Summary cards -->
+    <div class="report-summary" id="report-summary"></div>
+
+    <!-- Chart -->
+    <div class="chart-container">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title" id="chart-title">Analitik Penjualan</div>
+          <div class="chart-sub" id="chart-sub">Pendapatan per periode</div>
+        </div>
+      </div>
+      <canvas id="sales-chart" height="160"></canvas>
+      <div class="chart-legend" id="chart-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--blue);"></div><span id="legend-rev">Pendapatan</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--green);"></div><span id="legend-txn">Transaksi</span></div>
+      </div>
+    </div>
+
+    <!-- Transaction list -->
+    <div class="section" style="margin-top:14px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <div class="section-title" id="lbl-riwayat" style="margin:0;">Riwayat Transaksi</div>
+        <span id="txn-count" style="font-size:12px;color:var(--text3);"></span>
+      </div>
+      <div id="hist-list"></div>
+    </div>
+  </div>
+
+  <!-- ===== SETELAN ===== -->
+  <div id="view-settings" class="view">
+    <div class="page-header">
+      <h1 id="lbl-setelan">Setelan</h1>
+    </div>
+
+    <div class="settings-section">
+      <div class="section-title" id="st-sec-toko">Toko</div>
+      <div class="card">
+        <div class="list-row tappable" onclick="openModal('bizName')">
+          <div class="left">
+            <div class="row-icon icon-blue"><i data-lucide="store"></i></div>
+            <div>
+              <div class="row-label" id="lbl-namatoko">Nama Usaha</div>
+              <div class="row-sub" id="disp-biz2">—</div>
+            </div>
+          </div>
+          <div class="right chevron"><i data-lucide="chevron-right"></i></div>
+        </div>
+        <div class="divider"></div>
+        <div class="list-row tappable" onclick="openModal('qris')">
+          <div class="left">
+            <div class="row-icon icon-green"><i data-lucide="qr-code"></i></div>
+            <div>
+              <div class="row-label" id="lbl-qris">Setup QRIS</div>
+              <div class="row-sub" id="disp-qris-status">—</div>
+            </div>
+          </div>
+          <div class="right chevron"><i data-lucide="chevron-right"></i></div>
+        </div>
+        <div class="divider"></div>
+        <div class="list-row tappable" onclick="openModal('tax-settings')">
+          <div class="left">
+            <div class="row-icon icon-orange"><i data-lucide="percent"></i></div>
+            <div>
+              <div class="row-label" id="lbl-tax">Pajak & Diskon</div>
+              <div class="row-sub" id="disp-tax">—</div>
+            </div>
+          </div>
+          <div class="right chevron"><i data-lucide="chevron-right"></i></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <div class="section-title" id="st-sec-display">Tampilan & Bahasa</div>
+      <div class="card">
+        <div class="list-row tappable" onclick="openModal('theme')">
+          <div class="left">
+            <div class="row-icon icon-purple"><i data-lucide="sun-moon"></i></div>
+            <div class="row-label" id="lbl-tampilan">Tampilan</div>
+          </div>
+          <div class="right">
+            <span style="font-size:14px;color:var(--text3)" id="disp-theme">Light</span>
+            <div class="chevron"><i data-lucide="chevron-right"></i></div>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <div class="list-row tappable" onclick="openModal('lang')">
+          <div class="left">
+            <div class="row-icon icon-teal"><i data-lucide="languages"></i></div>
+            <div class="row-label" id="lbl-bahasa">Bahasa</div>
+          </div>
+          <div class="right">
+            <span style="font-size:14px;color:var(--text3)" id="disp-lang">Indonesia</span>
+            <div class="chevron"><i data-lucide="chevron-right"></i></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <div class="section-title" id="st-sec-data">Data</div>
+      <div class="card">
+        <div class="list-row tappable" onclick="openModal('data')">
+          <div class="left">
+            <div class="row-icon icon-indigo"><i data-lucide="database"></i></div>
+            <div class="row-label" id="lbl-datamanage">Ekspor & Impor Data</div>
+          </div>
+          <div class="right chevron"><i data-lucide="chevron-right"></i></div>
+        </div>
+        <div class="divider"></div>
+        <div class="list-row tappable" onclick="confirmClearSales()">
+          <div class="left">
+            <div class="row-icon icon-red"><i data-lucide="trash-2"></i></div>
+            <div class="row-label" style="color:var(--red)" id="lbl-hapuslaporan">Hapus Semua Laporan</div>
+          </div>
+          <div class="right chevron"><i data-lucide="chevron-right"></i></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <div class="section-title" id="st-sec-about">Tentang & Bantuan</div>
+      <div class="card">
+        <div class="list-row tappable" onclick="openModal('help')">
+          <div class="left">
+            <div class="row-icon icon-blue"><i data-lucide="circle-help"></i></div>
+            <div class="row-label" id="lbl-help">Cara Penggunaan</div>
+          </div>
+          <div class="right chevron"><i data-lucide="chevron-right"></i></div>
+        </div>
+        <div class="divider"></div>
+        <div class="list-row tappable" onclick="openModal('feature-request')">
+          <div class="left">
+            <div class="row-icon icon-green"><i data-lucide="lightbulb"></i></div>
+            <div class="row-label" id="lbl-featurereq">Permintaan Fitur</div>
+          </div>
+          <div class="right chevron"><i data-lucide="chevron-right"></i></div>
+        </div>
+        <div class="divider"></div>
+        <div class="list-row tappable" onclick="openModal('contact')">
+          <div class="left">
+            <div class="row-icon icon-teal"><i data-lucide="mail"></i></div>
+            <div class="row-label" id="lbl-contact">Kontak Developer</div>
+          </div>
+          <div class="right chevron"><i data-lucide="chevron-right"></i></div>
+        </div>
+        <div class="divider"></div>
+        <div class="list-row tappable" onclick="openModal('about')">
+          <div class="left">
+            <div class="row-icon icon-purple"><i data-lucide="info"></i></div>
+            <div class="row-label" id="lbl-about">Tentang Aplikasi</div>
+          </div>
+          <div class="right chevron"><i data-lucide="chevron-right"></i></div>
+        </div>
+        <div class="divider"></div>
+        <div class="list-row tappable" onclick="openModal('disclaimer')">
+          <div class="left">
+            <div class="row-icon icon-orange"><i data-lucide="alert-circle"></i></div>
+            <div class="row-label" id="lbl-disclaimer">Disclaimer</div>
+          </div>
+          <div class="right chevron"><i data-lucide="chevron-right"></i></div>
+        </div>
+        <div class="divider"></div>
+        <div class="list-row tappable" onclick="openModal('privacy')">
+          <div class="left">
+            <div class="row-icon icon-indigo"><i data-lucide="shield-check"></i></div>
+            <div class="row-label" id="lbl-privacy">Kebijakan Privasi</div>
+          </div>
+          <div class="right chevron"><i data-lucide="chevron-right"></i></div>
+        </div>
+        <div class="divider"></div>
+        <div class="list-row tappable" onclick="openModal('terms')">
+          <div class="left">
+            <div class="row-icon icon-brown"><i data-lucide="file-text"></i></div>
+            <div class="row-label" id="lbl-terms">Syarat Penggunaan</div>
+          </div>
+          <div class="right chevron"><i data-lucide="chevron-right"></i></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="app-version">
+      <div style="font-size:32px;margin-bottom:6px;">🛒</div>
+      POS Pro · v2.0.0<br>
+      <span id="lbl-data-local">Data tersimpan di perangkat ini</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== BOTTOM NAV ===== -->
+<nav id="main-nav">
+  <button class="tab active" id="tab-pos" onclick="goNav('pos',this)">
+    <i data-lucide="shopping-cart"></i>
+    <span id="tab-lbl-pos">Kasir</span>
+  </button>
+  <button class="tab" id="tab-stok" onclick="goNav('stok',this)">
+    <i data-lucide="package"></i>
+    <span id="tab-lbl-stok">Stok</span>
+  </button>
+  <button class="tab" id="tab-laporan" onclick="goNav('laporan',this)">
+    <i data-lucide="bar-chart-2"></i>
+    <span id="tab-lbl-laporan">Laporan</span>
+  </button>
+  <button class="tab" id="tab-settings" onclick="goNav('settings',this)">
+    <i data-lucide="settings-2"></i>
+    <span id="tab-lbl-settings">Setelan</span>
+  </button>
+</nav>
+
+<!-- ===== MODAL SHEET ===== -->
+<div class="overlay" id="overlay" onclick="if(event.target===this) closeModal()">
+  <div class="sheet" id="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <span class="sheet-title" id="sheet-title"></span>
+      <button class="sheet-close" onclick="closeModal()"><i data-lucide="x"></i></button>
+    </div>
+    <div class="sheet-body" id="sheet-body"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div id="print-area"></div>
+
+<script>
+// ===== I18N =====
+const T = {
+  ID: {
+    nav_kasir:"Kasir", nav_stok:"Stok", nav_laporan:"Laporan", nav_setelan:"Setelan",
+    ph_name:"Nama Produk", ph_price:"Harga (Rp)", ph_stock:"Stok",
+    btn_tambah:"Tambah Produk", btn_bayar:"Proses Pembayaran",
+    lbl_tambah_baru:"Tambah Produk Baru", lbl_daftar:"Daftar Produk",
+    empty_kasir:"Tambahkan produk di menu Stok terlebih dahulu.",
+    empty_stok:"Belum ada produk. Tambahkan di atas.",
+    empty_laporan:"Belum ada transaksi.",
+    namatoko:"Nama Usaha", set_qris:"Setup QRIS", set_tampilan:"Tampilan",
+    set_bahasa:"Bahasa", set_data:"Ekspor & Impor Data",
+    set_hapus:"Hapus Semua Laporan", set_privasi:"Kebijakan Privasi",
+    msg_sukses:"Pembayaran Berhasil! 🎉",
+    msg_hapus:"Semua laporan telah dihapus.",
+    msg_impor:"Data berhasil diimpor.",
+    lbl_export:"Ekspor", lbl_total_penjualan:"Total Penjualan",
+    lbl_total_transaksi:"Transaksi", lbl_hari_ini:"Hari Ini",
+    lbl_rata:"Rata-rata",
+    filter_daily:"Harian", filter_weekly:"Mingguan", filter_monthly:"Bulanan", filter_yearly:"Tahunan",
+    lbl_riwayat:"Riwayat Transaksi",
+    lbl_manage_cats:"Kategori",
+    lbl_help:"Cara Penggunaan",
+    lbl_contact:"Kontak Developer",
+    lbl_featurereq:"Permintaan Fitur",
+    lbl_about:"Tentang Aplikasi",
+    lbl_disclaimer:"Disclaimer",
+    lbl_privacy:"Kebijakan Privasi",
+    lbl_terms:"Syarat Penggunaan",
+    lbl_tax:"Pajak & Diskon",
+    lbl_kasir_view:"Lihat Keranjang",
+    lbl_data_local:"Data tersimpan di perangkat ini",
+    lbl_top_products:"Produk Terlaris",
+    st_toko:"Toko", st_display:"Tampilan & Bahasa", st_data:"Data", st_about:"Tentang & Bantuan",
+    cat_all:"Semua",
+  },
+  EN: {
+    nav_kasir:"Cashier", nav_stok:"Stock", nav_laporan:"Report", nav_setelan:"Settings",
+    ph_name:"Product Name", ph_price:"Price (Rp)", ph_stock:"Stock",
+    btn_tambah:"Add Product", btn_bayar:"Process Payment",
+    lbl_tambah_baru:"Add New Product", lbl_daftar:"Product List",
+    empty_kasir:"Add products in the Stock menu first.",
+    empty_stok:"No products yet. Add one above.",
+    empty_laporan:"No transactions yet.",
+    namatoko:"Business Name", set_qris:"QRIS Setup", set_tampilan:"Appearance",
+    set_bahasa:"Language", set_data:"Export & Import Data",
+    set_hapus:"Delete All Reports", set_privasi:"Privacy Policy",
+    msg_sukses:"Payment Successful! 🎉",
+    msg_hapus:"All reports deleted.",
+    msg_impor:"Data imported successfully.",
+    lbl_export:"Export", lbl_total_penjualan:"Total Revenue",
+    lbl_total_transaksi:"Transactions", lbl_hari_ini:"Today",
+    lbl_rata:"Average",
+    filter_daily:"Daily", filter_weekly:"Weekly", filter_monthly:"Monthly", filter_yearly:"Yearly",
+    lbl_riwayat:"Transaction History",
+    lbl_manage_cats:"Categories",
+    lbl_help:"How to Use",
+    lbl_contact:"Contact Developer",
+    lbl_featurereq:"Feature Request",
+    lbl_about:"About App",
+    lbl_disclaimer:"Disclaimer",
+    lbl_privacy:"Privacy Policy",
+    lbl_terms:"Terms of Use",
+    lbl_tax:"Tax & Discount",
+    lbl_kasir_view:"View Cart",
+    lbl_data_local:"Data stored on this device",
+    lbl_top_products:"Top Products",
+    st_toko:"Store", st_display:"Appearance & Language", st_data:"Data", st_about:"About & Help",
+    cat_all:"All",
+  }
+};
+
+// ===== STATE =====
+let lang = localStorage.getItem('pos_lang') || 'ID';
+let bizName = localStorage.getItem('pos_biz') || 'MY STORE';
+let theme = localStorage.getItem('pos_theme') || 'light';
+let db = JSON.parse(localStorage.getItem('pos_db2')) || { items: [], sales: [], categories: ['Makanan','Minuman','Lainnya'] };
+if (!db.categories) db.categories = ['Makanan','Minuman','Lainnya'];
+let cart = [];
+let tempImg = null;
+let currentFilter = '';
+let currentCat = 'ALL';
+let payMethod = 'cash';
+let reportFilter = 'daily';
+let globalDiscount = 0;
+let globalDiscountType = 'pct'; // 'pct' or 'fixed'
+let taxRate = parseFloat(localStorage.getItem('pos_tax')) || 0;
+let chartInstance = null;
+
+// ===== HELPERS =====
+const fmt = n => 'Rp\u00A0' + Math.round(Number(n)).toLocaleString('id-ID');
+const t = k => (T[lang] || T['ID'])[k] || k;
+const $ = id => document.getElementById(id);
+const qs = sel => document.querySelector(sel);
+const escHtml = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const escAttr = s => String(s).replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+
+function toast(msg, icon='check-circle', success=true) {
+  const el = $('toast');
+  el.innerHTML = `<i data-lucide="${icon}" style="color:${success?'#34C759':'#FF3B30'}"></i>${msg}`;
+  el.classList.add('show');
+  lucide.createIcons();
+  setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+function save() {
+  localStorage.setItem('pos_db2', JSON.stringify(db));
+}
+
+// ===== NAV =====
+function goNav(view, btn) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  $('view-'+view).classList.add('active');
+  btn.classList.add('active');
+  if (view !== 'pos') $('checkout-bar').classList.add('hidden');
+  if (view === 'pos') updateCartBar();
+  renderAll();
+}
+
+// ===== RENDER ALL =====
+function renderAll() {
+  applyLang();
+  renderPOS();
+  renderInv();
+  renderReport();
+  renderSettings();
+  lucide.createIcons();
+}
+
+// ===== LANGUAGE =====
+function applyLang() {
+  const ids = {
+    'lbl-kasir':'nav_kasir','lbl-stok':'nav_stok','lbl-laporan':'nav_laporan','lbl-setelan':'nav_setelan',
+    'tab-lbl-pos':'nav_kasir','tab-lbl-stok':'nav_stok','tab-lbl-laporan':'nav_laporan','tab-lbl-settings':'nav_setelan',
+    'lbl-tambah-produk':'lbl_tambah_baru','lbl-daftar-produk':'lbl_daftar',
+    'lbl-riwayat':'lbl_riwayat','lbl-manage-cats':'lbl_manage_cats',
+    'lbl-help':'lbl_help','lbl-contact':'lbl_contact','lbl-featurereq':'lbl_featurereq',
+    'lbl-about':'lbl_about','lbl-disclaimer':'lbl_disclaimer',
+    'lbl-privacy':'lbl_privacy','lbl-terms':'lbl_terms','lbl-tax':'lbl_tax',
+    'lbl-data-local':'lbl_data_local','lbl-namatoko':'namatoko','lbl-qris':'set_qris',
+    'lbl-tampilan':'set_tampilan','lbl-bahasa':'set_bahasa','lbl-datamanage':'set_data',
+    'lbl-hapuslaporan':'set_hapus',
+    'st-sec-toko':'st_toko','st-sec-display':'st_display','st-sec-data':'st_data','st-sec-about':'st_about',
+  };
+  Object.entries(ids).forEach(([id, key]) => { const el=$(id); if(el) el.textContent=t(key); });
+  $('lbl-btn-tambah').innerHTML = `<i data-lucide="plus-circle"></i> ${t('btn_tambah')}`;
+  $('bar-lbl').textContent = t('lbl_kasir_view');
+  $('in-name').placeholder = t('ph_name');
+  $('in-price').placeholder = t('ph_price');
+  $('in-stock').placeholder = t('ph_stock');
+  $('pos-search').placeholder = lang==='ID' ? 'Cari produk...' : 'Search products...';
+  $('disp-lang').textContent = lang==='ID' ? 'Indonesia' : 'English';
+  $('ftab-daily').textContent = t('filter_daily');
+  $('ftab-weekly').textContent = t('filter_weekly');
+  $('ftab-monthly').textContent = t('filter_monthly');
+  $('ftab-yearly').textContent = t('filter_yearly');
+}
+
+// ===== THEME =====
+function applyTheme(m, save_=true) {
+  theme = m;
+  document.documentElement.setAttribute('data-theme', m);
+  $('disp-theme').textContent = m==='dark' ? 'Dark' : 'Light';
+  if (save_) localStorage.setItem('pos_theme', m);
+  if (chartInstance) drawChart();
+}
+
+// ===== POS =====
+function filterPOS(q) { currentFilter = q.toLowerCase(); renderPOS(); }
+
+function renderCategories() {
+  const scroll = $('cat-scroll');
+  const cats = ['ALL', ...db.categories];
+  scroll.innerHTML = cats.map(c => `
+    <button class="cat-chip${currentCat===c?' active':''}" onclick="setCat('${escAttr(c)}')">
+      ${c==='ALL' ? t('cat_all') : escHtml(c)}
+    </button>`).join('');
+}
+
+function setCat(c) { currentCat = c; renderPOS(); }
+
+function renderPOS() {
+  $('disp-biz').textContent = bizName;
+  renderCategories();
+  const grid = $('pos-grid');
+  let items = db.items;
+  if (currentCat !== 'ALL') items = items.filter(i => i.category === currentCat);
+  if (currentFilter) items = items.filter(i => i.name.toLowerCase().includes(currentFilter));
+
+  if (db.items.length === 0) {
+    grid.style.display = 'block';
+    grid.innerHTML = `<div class="empty-state anim-in">
+      <div class="empty-icon"><i data-lucide="shopping-bag"></i></div>
+      <h3>${lang==='ID'?'Belum Ada Produk':'No Products'}</h3>
+      <p>${t('empty_kasir')}</p>
+    </div>`;
+  } else if (items.length === 0) {
+    grid.style.display = 'block';
+    grid.innerHTML = `<div class="empty-state"><div class="empty-icon"><i data-lucide="search-x"></i></div><h3>${lang==='ID'?'Tidak Ditemukan':'Not Found'}</h3></div>`;
+  } else {
+    grid.style.display = 'grid';
+    grid.innerHTML = items.map(i => {
+      const inCart = cart.find(c => c.id === i.id);
+      const lowStock = typeof i.stock === 'number' && i.stock <= 5 && i.stock > 0;
+      const outStock = typeof i.stock === 'number' && i.stock === 0;
+      return `<div class="item-card${inCart?' in-cart':''}${outStock?' opacity:0.5':''}" onclick="${outStock?'':'addToCart('+i.id+')'}">
+        ${inCart ? `<div class="badge">${inCart.qty}</div>` : ''}
+        ${lowStock && !inCart ? `<div class="low-stock">!</div>` : ''}
+        <div class="item-img-wrap">
+          ${i.img ? `<img src="${i.img}" loading="lazy">` : `<i data-lucide="package"></i>`}
+        </div>
+        <div class="item-name">${escHtml(i.name)}</div>
+        <div class="item-price">${fmt(i.price)}</div>
+        ${typeof i.stock === 'number' ? `<div class="item-stock-badge">${outStock ? (lang==='ID'?'Habis':'Out') : i.stock+' '+( lang==='ID'?'stok':'stock')}</div>` : ''}
+      </div>`;
+    }).join('');
+  }
+  updateCartBar();
+  lucide.createIcons();
+}
+
+function addToCart(id) {
+  const item = db.items.find(i => i.id === id);
+  if (!item) return;
+  if (typeof item.stock === 'number' && item.stock <= 0) {
+    toast(lang==='ID'?'Stok habis':'Out of stock','alert-circle',false); return;
+  }
+  const ex = cart.find(c => c.id === id);
+  if (ex) {
+    if (typeof item.stock === 'number' && ex.qty >= item.stock) {
+      toast(lang==='ID'?'Stok tidak cukup':'Not enough stock','alert-circle',false); return;
+    }
+    ex.qty++;
+  } else {
+    cart.push({...item, qty: 1});
+  }
+  renderPOS();
+}
+
+function removeFromCart(id) {
+  const ex = cart.find(c => c.id === id);
+  if (!ex) return;
+  if (ex.qty > 1) ex.qty--;
+  else cart = cart.filter(c => c.id !== id);
+  renderPOS();
+  if ($('overlay').classList.contains('active')) openModal('cart');
+}
+
+function updateCartBar() {
+  const qty = cart.reduce((s,i) => s+i.qty, 0);
+  const sub = cart.reduce((s,i) => s+i.price*i.qty, 0);
+  const bar = $('checkout-bar');
+  if (qty > 0) {
+    bar.classList.remove('hidden');
+    $('bar-qty').textContent = qty;
+    $('bar-total').textContent = fmt(sub);
+  } else {
+    bar.classList.add('hidden');
+  }
+  $('mini-cart-count').textContent = qty;
+}
+
+// ===== DISCOUNT CALC =====
+function calcCartTotal() {
+  const sub = cart.reduce((s,i) => s+i.price*i.qty, 0);
+  let disc = 0;
+  if (globalDiscountType === 'pct') disc = sub * (globalDiscount/100);
+  else disc = Math.min(globalDiscount, sub);
+  const afterDisc = sub - disc;
+  const tax = afterDisc * (taxRate/100);
+  return { sub, disc, afterDisc, tax, total: afterDisc + tax };
+}
+
+// ===== INVENTORY =====
+function previewImg(input) {
+  if (!input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    tempImg = e.target.result;
+    $('img-picker').innerHTML = `<img src="${tempImg}">`;
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+function addItem() {
+  const name = $('in-name').value.trim();
+  const price = parseFloat($('in-price').value);
+  const stock = $('in-stock').value !== '' ? parseInt($('in-stock').value) : null;
+  const cat = $('in-cat').value;
+  if (!name) { showFieldError('in-name'); return; }
+  if (!price || price <= 0) { showFieldError('in-price'); return; }
+  db.items.push({ id: Date.now(), name, price, img: tempImg, stock, category: cat });
+  save();
+  $('in-name').value = ''; $('in-price').value = ''; $('in-stock').value = '';
+  $('img-picker').innerHTML = `<i data-lucide="image-plus"></i>`;
+  tempImg = null;
+  lucide.createIcons();
+  renderAll();
+  toast(lang==='ID' ? 'Produk ditambahkan' : 'Product added');
+}
+
+function showFieldError(id) {
+  const el = $(id);
+  el.style.borderColor = 'var(--red)';
+  el.style.boxShadow = '0 0 0 3px rgba(255,59,48,0.15)';
+  el.focus();
+  setTimeout(() => { el.style.borderColor=''; el.style.boxShadow=''; }, 1500);
+}
+
+function deleteItem(id) {
+  openConfirm(
+    lang==='ID'?'Hapus produk ini?':'Delete this product?',
+    lang==='ID'?'Tindakan ini tidak dapat dibatalkan.':'This action cannot be undone.',
+    () => {
+      db.items = db.items.filter(x => x.id !== id);
+      cart = cart.filter(c => c.id !== id);
+      save(); closeModal();
+      toast(lang==='ID'?'Produk dihapus':'Product deleted','trash-2');
+      renderAll();
+    }
+  );
+}
+
+function editItem(id) {
+  const item = db.items.find(i => i.id === id);
+  if (!item) return;
+  const title = $('sheet-title');
+  const body = $('sheet-body');
+  title.textContent = lang==='ID'?'Edit Produk':'Edit Product';
+  body.innerHTML = `
+    <div class="form-row" style="margin-bottom:12px;">
+      <div class="img-picker" id="edit-img-picker" onclick="document.getElementById('edit-img-inp').click()" style="width:68px;height:68px;">
+        ${item.img ? `<img src="${item.img}">` : `<i data-lucide="image-plus"></i>`}
+      </div>
+      <input type="file" id="edit-img-inp" hidden accept="image/*" onchange="editPreviewImg(this)">
+      <div class="form-fields">
+        <div class="field-wrap"><input type="text" id="edit-name" class="fld" value="${escAttr(item.name)}" placeholder="${t('ph_name')}" style="padding:11px 14px;"></div>
+        <div class="form-fields-grid">
+          <input type="number" id="edit-price" class="fld" value="${item.price}" placeholder="${t('ph_price')}" inputmode="numeric" style="padding:11px 14px;">
+          <input type="number" id="edit-stock" class="fld" value="${item.stock??''}" placeholder="${t('ph_stock')}" inputmode="numeric" style="padding:11px 14px;">
+        </div>
+      </div>
+    </div>
+    <div class="field-wrap"><select id="edit-cat" class="fld">${db.categories.map(c=>`<option value="${escAttr(c)}"${c===item.category?' selected':''}>${escHtml(c)}</option>`).join('')}</select></div>
+    <button class="btn btn-primary" onclick="saveEditItem(${id})" style="margin-top:6px;">${lang==='ID'?'Simpan':'Save'}</button>`;
+  showOverlay(); lucide.createIcons();
+  window._editTempImg = null;
+}
+
+let _editTempImg = null;
+function editPreviewImg(input) {
+  if (!input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    _editTempImg = e.target.result;
+    $('edit-img-picker').innerHTML = `<img src="${_editTempImg}">`;
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+function saveEditItem(id) {
+  const item = db.items.find(i => i.id === id);
+  if (!item) return;
+  const name = $('edit-name').value.trim();
+  const price = parseFloat($('edit-price').value);
+  if (!name) { showFieldError('edit-name'); return; }
+  if (!price || price <= 0) { showFieldError('edit-price'); return; }
+  item.name = name; item.price = price;
+  item.stock = $('edit-stock').value !== '' ? parseInt($('edit-stock').value) : null;
+  item.category = $('edit-cat').value;
+  if (_editTempImg) item.img = _editTempImg;
+  save(); closeModal(); renderAll();
+  toast(lang==='ID'?'Produk diperbarui':'Product updated');
+}
+
+function renderInv() {
+  // Populate category select
+  const catSel = $('in-cat');
+  if (catSel) catSel.innerHTML = db.categories.map(c => `<option value="${escAttr(c)}">${escHtml(c)}</option>`).join('');
+
+  const list = $('inv-list');
+  if (db.items.length === 0) {
+    list.innerHTML = `<div class="empty-state">
+      <div class="empty-icon"><i data-lucide="package-plus"></i></div>
+      <p>${t('empty_stok')}</p>
+    </div>`;
+    list.style.cssText = 'background:none;border:none;box-shadow:none;';
+  } else {
+    list.style.cssText = '';
+    list.innerHTML = db.items.map((i, idx) => `
+      <div class="list-row">
+        <div class="left">
+          ${i.img ? `<img class="stock-item-img" src="${i.img}">` : `<div class="stock-item-no-img"><i data-lucide="package"></i></div>`}
+          <div style="min-width:0;">
+            <div class="row-label" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escHtml(i.name)}</div>
+            <div class="row-sub">${fmt(i.price)} ${i.category ? `· <span style="color:var(--blue);font-size:11px;">${escHtml(i.category)}</span>` : ''}
+              ${typeof i.stock==='number' ? ` · <span class="stock-dot ${i.stock<=0?'stock-out':i.stock<=5?'stock-low':'stock-ok'}"></span>${i.stock}` : ''}</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <button class="edit-btn" onclick="editItem(${i.id})"><i data-lucide="pencil"></i></button>
+          <button class="delete-btn" onclick="deleteItem(${i.id})"><i data-lucide="trash-2"></i></button>
+        </div>
+      </div>
+      ${idx<db.items.length-1?'<div class="divider"></div>':''}`).join('');
+  }
+}
+
+// ===== REPORT FILTER =====
+function setReportFilter(f, btn) {
+  reportFilter = f;
+  document.querySelectorAll('.filter-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderReport();
+}
+
+function getFilteredSales() {
+  const now = new Date();
+  return db.sales.filter(s => {
+    const d = parseSaleDate(s.date);
+    if (!d) return false;
+    if (reportFilter === 'daily') {
+      return d.toDateString() === now.toDateString();
+    } else if (reportFilter === 'weekly') {
+      const weekAgo = new Date(now); weekAgo.setDate(now.getDate()-6);
+      return d >= weekAgo;
+    } else if (reportFilter === 'monthly') {
+      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+    } else {
+      return d.getFullYear() === now.getFullYear();
+    }
+  });
+}
+
+function parseSaleDate(dateStr) {
+  try {
+    // Support "DD/MM/YYYY, HH:MM:SS" format
+    const parts = dateStr.split(', ');
+    const dateParts = parts[0].split('/');
+    if (dateParts.length === 3) {
+      const [d,m,y] = dateParts;
+      const timePart = parts[1] || '00:00:00';
+      return new Date(`${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}T${timePart}`);
+    }
+    return new Date(dateStr);
+  } catch { return null; }
+}
+
+// ===== CHART =====
+function drawChart() {
+  const canvas = $('sales-chart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.offsetWidth || 300;
+  canvas.width = W * window.devicePixelRatio;
+  canvas.height = 160 * window.devicePixelRatio;
+  canvas.style.width = W+'px';
+  canvas.style.height = '160px';
+  ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+
+  const now = new Date();
+  let labels = [], revData = [], txnData = [];
+
+  if (reportFilter === 'daily') {
+    // last 24 hours by hour
+    for (let h = 23; h >= 0; h--) {
+      const start = new Date(now); start.setHours(now.getHours()-h,0,0,0);
+      const end = new Date(start); end.setHours(start.getHours()+1);
+      const sales = db.sales.filter(s => { const d=parseSaleDate(s.date); return d>=start&&d<end; });
+      labels.push(start.getHours().toString().padStart(2,'0')+'h');
+      revData.push(sales.reduce((s,x)=>s+x.total,0));
+      txnData.push(sales.length);
+    }
+    // Show last 8 hours
+    labels = labels.slice(-8); revData = revData.slice(-8); txnData = txnData.slice(-8);
+  } else if (reportFilter === 'weekly') {
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(now); d.setDate(now.getDate()-i);
+      const ds = d.toDateString();
+      const sales = db.sales.filter(s => { const sd=parseSaleDate(s.date); return sd&&sd.toDateString()===ds; });
+      const days = lang==='ID' ? ['Min','Sen','Sel','Rab','Kam','Jum','Sab'] : ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+      labels.push(days[d.getDay()]);
+      revData.push(sales.reduce((s,x)=>s+x.total,0));
+      txnData.push(sales.length);
+    }
+  } else if (reportFilter === 'monthly') {
+    const daysInMonth = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
+    for (let d = 1; d <= daysInMonth; d++) {
+      const target = new Date(now.getFullYear(), now.getMonth(), d);
+      const sales = db.sales.filter(s => { const sd=parseSaleDate(s.date); return sd&&sd.toDateString()===target.toDateString(); });
+      labels.push(d%5===1||d===daysInMonth ? d+'' : '');
+      revData.push(sales.reduce((s,x)=>s+x.total,0));
+      txnData.push(sales.length);
+    }
+  } else {
+    const months = lang==='ID' ? ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ags','Sep','Okt','Nov','Des'] : ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    for (let m = 0; m < 12; m++) {
+      const sales = db.sales.filter(s => { const sd=parseSaleDate(s.date); return sd&&sd.getMonth()===m&&sd.getFullYear()===now.getFullYear(); });
+      labels.push(months[m]);
+      revData.push(sales.reduce((s,x)=>s+x.total,0));
+      txnData.push(sales.length);
+    }
+  }
+
+  const isDark = theme === 'dark';
+  const gridColor = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)';
+  const textColor = isDark ? '#636366' : '#8E8E93';
+  const blueColor = '#007AFF';
+  const greenColor = '#34C759';
+
+  ctx.clearRect(0, 0, W, 160);
+
+  const padL=36, padR=12, padT=12, padB=28;
+  const chartW = W-padL-padR;
+  const chartH = 160-padT-padB;
+  const n = labels.length;
+  if (n === 0) return;
+
+  const maxRev = Math.max(...revData, 1);
+  const maxTxn = Math.max(...txnData, 1);
+
+  // Grid lines
+  ctx.strokeStyle = gridColor;
+  ctx.lineWidth = 0.5;
+  for (let i = 0; i <= 4; i++) {
+    const y = padT + (chartH/4)*i;
+    ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(padL+chartW, y); ctx.stroke();
+    // Y label
+    ctx.fillStyle = textColor;
+    ctx.font = '10px -apple-system,sans-serif';
+    ctx.textAlign = 'right';
+    const val = maxRev * (1 - i/4);
+    ctx.fillText(val>=1000 ? Math.round(val/1000)+'k' : Math.round(val)+'', padL-4, y+3);
+  }
+
+  // X labels
+  ctx.fillStyle = textColor;
+  ctx.textAlign = 'center';
+  ctx.font = '10px -apple-system,sans-serif';
+  labels.forEach((lbl, i) => {
+    if (lbl) {
+      const x = padL + (i/(n-1||1))*chartW;
+      ctx.fillText(lbl, x, 160-padB+14);
+    }
+  });
+
+  // Revenue line with gradient fill
+  const revPoints = revData.map((v,i) => ({
+    x: padL + (i/(n-1||1))*chartW,
+    y: padT + chartH*(1 - v/maxRev)
+  }));
+
+  // Gradient fill
+  const grad = ctx.createLinearGradient(0, padT, 0, padT+chartH);
+  grad.addColorStop(0, 'rgba(0,122,255,0.2)');
+  grad.addColorStop(1, 'rgba(0,122,255,0)');
+  ctx.beginPath();
+  ctx.moveTo(revPoints[0].x, padT+chartH);
+  revPoints.forEach(p => ctx.lineTo(p.x, p.y));
+  ctx.lineTo(revPoints[revPoints.length-1].x, padT+chartH);
+  ctx.closePath();
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // Revenue line
+  ctx.beginPath();
+  ctx.strokeStyle = blueColor;
+  ctx.lineWidth = 2;
+  ctx.lineJoin = 'round';
+  revPoints.forEach((p,i) => i===0 ? ctx.moveTo(p.x,p.y) : ctx.lineTo(p.x,p.y));
+  ctx.stroke();
+
+  // Transaction dots (secondary axis)
+  const txnPoints = txnData.map((v,i) => ({
+    x: padL + (i/(n-1||1))*chartW,
+    y: padT + chartH*(1 - v/maxTxn)
+  }));
+  ctx.beginPath();
+  ctx.strokeStyle = greenColor;
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([3,3]);
+  txnPoints.forEach((p,i) => i===0 ? ctx.moveTo(p.x,p.y) : ctx.lineTo(p.x,p.y));
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Dots
+  revPoints.forEach((p,i) => {
+    if (revData[i] > 0) {
+      ctx.beginPath(); ctx.arc(p.x,p.y,3,0,Math.PI*2);
+      ctx.fillStyle=blueColor; ctx.fill();
+    }
+  });
+}
+
+// ===== RENDER REPORT =====
+function renderReport() {
+  const filtered = getFilteredSales();
+  const allSales = db.sales;
+
+  const rev = filtered.reduce((s,x)=>s+x.total,0);
+  const txn = filtered.length;
+  const avg = txn > 0 ? rev/txn : 0;
+
+  // Summary cards
+  $('report-summary').innerHTML = `
+    <div class="summary-card">
+      <div class="summary-label">${t('lbl_total_penjualan')}</div>
+      <div class="summary-value blue sm">${fmt(rev)}</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-label">${t('lbl_total_transaksi')}</div>
+      <div class="summary-value">${txn}</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-label">${t('lbl_rata')}</div>
+      <div class="summary-value sm">${txn>0?fmt(avg):'-'}</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-label">${lang==='ID'?'Total Keseluruhan':'All Time'}</div>
+      <div class="summary-value sm">${fmt(allSales.reduce((s,x)=>s+x.total,0))}</div>
+    </div>`;
+
+  // Chart subtitle
+  const subtitles = { daily:lang==='ID'?'8 jam terakhir':'Last 8 hours', weekly:lang==='ID'?'7 hari terakhir':'Last 7 days', monthly:lang==='ID'?'Bulan ini':'This month', yearly:lang==='ID'?'Tahun ini':'This year' };
+  $('chart-title').textContent = lang==='ID'?'Analitik Penjualan':'Sales Analytics';
+  $('chart-sub').textContent = subtitles[reportFilter];
+  $('legend-rev').textContent = lang==='ID'?'Pendapatan':'Revenue';
+  $('legend-txn').textContent = lang==='ID'?'Transaksi':'Transactions';
+
+  setTimeout(() => drawChart(), 50);
+
+  // Transaction count
+  $('txn-count').textContent = filtered.length + (lang==='ID'?' transaksi':' transactions');
+
+  // Transaction list
+  const hist = $('hist-list');
+  if (filtered.length === 0) {
+    hist.innerHTML = `<div class="empty-state">
+      <div class="empty-icon"><i data-lucide="bar-chart-2"></i></div>
+      <h3>${lang==='ID'?'Belum Ada Transaksi':'No Transactions'}</h3>
+      <p>${t('empty_laporan')}</p>
+    </div>`;
+  } else {
+    hist.innerHTML = filtered.map(s => {
+      const methodClass = (s.method||'').includes('QRIS') ? 'badge-qris' : 'badge-cash';
+      const methodLabel = s.method || (lang==='ID'?'Tunai':'Cash');
+      return `<div class="sale-card anim-in">
+        <div class="sale-card-header">
+          <div>
+            <div class="sale-total">${fmt(s.total)}</div>
+            <div class="sale-date">${s.date}</div>
+          </div>
+          <span class="sale-method-badge ${methodClass}">${methodLabel}</span>
+        </div>
+        <div class="sale-desc">${escHtml(s.desc)}</div>
+      </div>`;
+    }).join('');
+  }
+}
+
+// ===== SETTINGS RENDER =====
+function renderSettings() {
+  $('disp-biz').textContent = bizName;
+  $('disp-biz2').textContent = bizName;
+  const qrisImg = localStorage.getItem('pos_qris');
+  $('disp-qris-status').textContent = qrisImg ? (lang==='ID'?'Terpasang ✓':'Configured ✓') : (lang==='ID'?'Belum dipasang':'Not configured');
+  $('disp-tax').textContent = taxRate > 0 ? `PPN ${taxRate}%` : (lang==='ID'?'Tidak aktif':'Inactive');
+}
+
+// ===== MODAL =====
+function openModal(type) {
+  const body = $('sheet-body');
+  const title = $('sheet-title');
+
+  if (type === 'cart') {
+    title.textContent = lang==='ID' ? 'Keranjang' : 'Cart';
+    if (cart.length === 0) {
+      body.innerHTML = `<div class="empty-state">
+        <div class="empty-icon"><i data-lucide="shopping-cart"></i></div>
+        <p>${lang==='ID'?'Keranjang kosong':'Cart is empty'}</p>
+      </div>`;
+    } else {
+      const {sub, disc, afterDisc, tax, total} = calcCartTotal();
+      const qrisImg = localStorage.getItem('pos_qris');
+      body.innerHTML = `
+        <div id="cart-items">
+          ${cart.map(i => `
+            <div class="cart-item-row">
+              ${i.img ? `<img class="cart-item-img" src="${i.img}">` : `<div class="cart-item-img" style="display:flex;align-items:center;justify-content:center;background:var(--card2);border-radius:10px;"><i data-lucide="package" style="width:17px;opacity:0.4"></i></div>`}
+              <div class="cart-item-info">
+                <div class="cart-item-name">${escHtml(i.name)}</div>
+                <div class="cart-item-price">${fmt(i.price)} × ${i.qty} = <b>${fmt(i.price*i.qty)}</b></div>
+              </div>
+              <div class="qty-control">
+                <button class="qty-btn" onclick="removeFromCart(${i.id})">−</button>
+                <span class="qty-num">${i.qty}</span>
+                <button class="qty-btn" onclick="addToCart(${i.id});if($('overlay').classList.contains('active'))openModal('cart')">+</button>
+              </div>
+            </div>`).join('')}
+        </div>
+        <div style="background:var(--card2);border-radius:var(--r-md);padding:12px 14px;margin:10px 0 8px;font-size:14px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px;color:var(--text2);">
+            <span>${lang==='ID'?'Subtotal':'Subtotal'}</span><span style="font-weight:600;">${fmt(sub)}</span>
+          </div>
+          ${disc > 0 ? `<div style="display:flex;justify-content:space-between;margin-bottom:6px;color:var(--red);">
+            <span>${lang==='ID'?'Diskon':'Discount'}</span><span style="font-weight:600;">-${fmt(disc)}</span>
+          </div>` : ''}
+          ${taxRate > 0 ? `<div style="display:flex;justify-content:space-between;margin-bottom:6px;color:var(--text3);">
+            <span>PPN ${taxRate}%</span><span style="font-weight:600;">${fmt(tax)}</span>
+          </div>` : ''}
+        </div>
+        <div class="cart-total-row">
+          <span class="cart-total-label">Total</span>
+          <span class="cart-total-val">${fmt(total)}</span>
+        </div>
+        <div style="margin:8px 0;">
+          <div class="field-label">${lang==='ID'?'Metode Pembayaran':'Payment Method'}</div>
+          <div class="pay-methods">
+            <div class="pay-method ${payMethod==='cash'?'selected':''}" onclick="selectPayMethod('cash')">
+              <i data-lucide="banknote"></i>${lang==='ID'?'Tunai':'Cash'}
+            </div>
+            <div class="pay-method ${payMethod==='qris'?'selected':''}" onclick="selectPayMethod('qris')">
+              <i data-lucide="qr-code"></i>QRIS
+            </div>
+            <div class="pay-method ${payMethod==='transfer'?'selected':''}" onclick="selectPayMethod('transfer')">
+              <i data-lucide="credit-card"></i>Transfer
+            </div>
+            <div class="pay-method ${payMethod==='debit'?'selected':''}" onclick="selectPayMethod('debit')">
+              <i data-lucide="credit-card"></i>Debit
+            </div>
+          </div>
+          <div id="pay-method-extra"></div>
+        </div>
+        <button class="btn btn-success" onclick="processCheckout()" style="margin-bottom:8px;">
+          <i data-lucide="check-circle"></i> ${t('btn_bayar')}
+        </button>
+        <button class="btn btn-ghost" onclick="closeModal()">${lang==='ID'?'Kembali':'Back'}</button>`;
+      renderPayExtra(total, qrisImg);
+    }
+  }
+
+  else if (type === 'discount-quick') {
+    title.textContent = lang==='ID'?'Diskon Global':'Global Discount';
+    body.innerHTML = `
+      <p style="font-size:14px;color:var(--text3);margin-top:0;">${lang==='ID'?'Diskon akan diterapkan ke semua transaksi.':'Discount applied to all transactions.'}</p>
+      <div class="field-wrap">
+        <div class="field-label">${lang==='ID'?'Tipe Diskon':'Discount Type'}</div>
+        <select id="disc-type" class="fld" style="margin-bottom:8px;">
+          <option value="pct" ${globalDiscountType==='pct'?'selected':''}>${lang==='ID'?'Persen (%)':'Percent (%)'}</option>
+          <option value="fixed" ${globalDiscountType==='fixed'?'selected':''}>${lang==='ID'?'Nominal (Rp)':'Fixed Amount (Rp)'}</option>
+        </select>
+      </div>
+      <div class="field-wrap">
+        <div class="field-label">${lang==='ID'?'Nilai Diskon':'Discount Value'}</div>
+        <input type="number" id="disc-val" class="fld" value="${globalDiscount}" inputmode="numeric" min="0">
+      </div>
+      <button class="btn btn-primary" onclick="applyGlobalDiscount()" style="margin-top:4px;">${lang==='ID'?'Terapkan':'Apply'}</button>
+      ${globalDiscount>0?`<button class="btn btn-ghost" onclick="globalDiscount=0;globalDiscountType='pct';closeModal();toast(lang==='ID'?'Diskon dihapus':'Discount removed','tag');" style="margin-top:8px;">${lang==='ID'?'Hapus Diskon':'Remove Discount'}</button>`:''}`;
+  }
+
+  else if (type === 'bizName') {
+    title.textContent = t('namatoko');
+    body.innerHTML = `
+      <div class="field-wrap">
+        <div class="field-label">${lang==='ID'?'Nama Usaha':'Business Name'}</div>
+        <input type="text" id="inp-biz" class="fld" value="${escAttr(bizName)}" maxlength="40">
+      </div>
+      <button class="btn btn-primary" onclick="saveBizName()" style="margin-top:4px;">${lang==='ID'?'Simpan':'Save'}</button>`;
+    setTimeout(() => $('inp-biz')?.focus(), 150);
+  }
+
+  else if (type === 'qris') {
+    title.textContent = t('set_qris');
+    const cur = localStorage.getItem('pos_qris');
+    body.innerHTML = `
+      ${cur ? `<div class="qris-box"><p class="qris-label">QRIS ${lang==='ID'?'Aktif':'Active'}</p><img src="${cur}"></div>` : ''}
+      <div class="qris-upload-area" onclick="document.getElementById('qris-up').click()">
+        <i data-lucide="upload-cloud"></i>
+        <p>${lang==='ID'?'Klik untuk upload gambar QRIS':'Click to upload QRIS image'}</p>
+      </div>
+      <input type="file" id="qris-up" hidden accept="image/*" onchange="uploadQris(this)">
+      ${cur ? `<button class="btn btn-danger" onclick="removeQris()" style="margin-top:6px;"><i data-lucide="trash-2"></i> ${lang==='ID'?'Hapus QRIS':'Remove QRIS'}</button>` : ''}`;
+  }
+
+  else if (type === 'tax-settings') {
+    title.textContent = t('lbl_tax');
+    body.innerHTML = `
+      <div class="info-block">
+        <p>${lang==='ID'?'Pajak dan diskon global diterapkan di setiap transaksi.':'Global tax and discount are applied at checkout.'}</p>
+      </div>
+      <div class="field-wrap">
+        <div class="field-label">${lang==='ID'?'PPN / Pajak (%)':'VAT / Tax (%)'}</div>
+        <input type="number" id="inp-tax" class="fld" value="${taxRate}" inputmode="decimal" min="0" max="100">
+      </div>
+      <button class="btn btn-primary" onclick="saveTax()" style="margin-top:4px;">${lang==='ID'?'Simpan':'Save'}</button>`;
+  }
+
+  else if (type === 'theme') {
+    title.textContent = t('set_tampilan');
+    body.innerHTML = `
+      <button class="btn ${theme==='light'?'btn-primary':'btn-ghost'}" onclick="applyTheme('light');closeModal();" style="margin-bottom:10px;">
+        <i data-lucide="sun"></i> Light Mode
+      </button>
+      <button class="btn ${theme==='dark'?'btn-primary':'btn-ghost'}" onclick="applyTheme('dark');closeModal();">
+        <i data-lucide="moon"></i> Dark Mode
+      </button>`;
+  }
+
+  else if (type === 'lang') {
+    title.textContent = t('set_bahasa');
+    body.innerHTML = `
+      <button class="btn ${lang==='ID'?'btn-primary':'btn-ghost'}" onclick="setLang('ID')" style="margin-bottom:10px;">
+        🇮🇩 Indonesia
+      </button>
+      <button class="btn ${lang==='EN'?'btn-primary':'btn-ghost'}" onclick="setLang('EN')">
+        🇺🇸 English
+      </button>`;
+  }
+
+  else if (type === 'data') {
+    title.textContent = t('set_data');
+    body.innerHTML = `
+      <p style="font-size:14px;color:var(--text3);margin-top:0;">${lang==='ID'?'Backup atau pulihkan data toko Anda.':'Backup or restore your store data.'}</p>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <button class="btn btn-primary" onclick="exportJSON()">
+          <i data-lucide="file-json"></i> ${lang==='ID'?'Ekspor Backup (JSON)':'Export Backup (JSON)'}
+        </button>
+        <button class="btn btn-ghost" onclick="exportCSV()">
+          <i data-lucide="file-spreadsheet"></i> ${lang==='ID'?'Ekspor Laporan (CSV/Excel)':'Export Report (CSV/Excel)'}
+        </button>
+        <button class="btn btn-ghost" onclick="exportPDF()">
+          <i data-lucide="file-text"></i> ${lang==='ID'?'Ekspor Laporan (PDF)':'Export Report (PDF)'}
+        </button>
+        <button class="btn btn-ghost" onclick="document.getElementById('import-f').click()" style="margin-top:4px;">
+          <i data-lucide="upload"></i> ${lang==='ID'?'Impor Data (JSON)':'Import Data (JSON)'}
+        </button>
+        <input type="file" id="import-f" hidden accept=".json" onchange="importData(this)">
+      </div>`;
+  }
+
+  else if (type === 'export-report') {
+    title.textContent = lang==='ID'?'Ekspor Laporan':'Export Report';
+    body.innerHTML = `
+      <p style="font-size:14px;color:var(--text3);margin-top:0;">${lang==='ID'?'Pilih format ekspor laporan.':'Choose export format for the report.'}</p>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <button class="btn btn-primary" onclick="exportCSV();closeModal();">
+          <i data-lucide="file-spreadsheet"></i> ${lang==='ID'?'Ekspor CSV (Excel)':'Export CSV (Excel)'}
+        </button>
+        <button class="btn btn-ghost" onclick="exportPDF();closeModal();">
+          <i data-lucide="file-text"></i> ${lang==='ID'?'Ekspor PDF':'Export PDF'}
+        </button>
+        <button class="btn btn-ghost" onclick="exportJSON();closeModal();">
+          <i data-lucide="file-json"></i> ${lang==='ID'?'Ekspor JSON':'Export JSON'}
+        </button>
+      </div>`;
+  }
+
+  else if (type === 'manage-cats') {
+    title.textContent = lang==='ID'?'Kelola Kategori':'Manage Categories';
+    renderCatModal(body);
+  }
+
+  else if (type === 'help') {
+    title.textContent = t('lbl_help');
+    const steps = lang==='ID' ? [
+      ['Tambah Produk','Buka menu Stok → isi nama, harga, stok, kategori → Tambah Produk.'],
+      ['Kelola Kategori','Di Stok → tap tombol Kategori untuk tambah/hapus kategori produk.'],
+      ['Proses Transaksi','Di Kasir → tap produk untuk tambah ke keranjang → Lihat Keranjang → pilih metode bayar → Proses Pembayaran.'],
+      ['Diskon','Tap ikon tag di Kasir untuk atur diskon global (persen atau nominal).'],
+      ['Lihat Laporan','Buka menu Laporan → pilih filter Harian/Mingguan/Bulanan/Tahunan.'],
+      ['Export Data','Di Laporan tap ikon unduh, atau di Setelan → Ekspor & Impor Data.'],
+      ['Backup & Restore','Di Setelan → Ekspor & Impor → backup JSON lalu impor kembali jika diperlukan.'],
+    ] : [
+      ['Add Products','Go to Stock → fill name, price, stock, category → Add Product.'],
+      ['Manage Categories','In Stock → tap Categories button to add/remove product categories.'],
+      ['Process Transaction','In Cashier → tap products to add to cart → View Cart → choose payment method → Process Payment.'],
+      ['Discount','Tap the tag icon in Cashier to set a global discount (percent or fixed).'],
+      ['View Reports','Open Report menu → choose Daily/Weekly/Monthly/Yearly filter.'],
+      ['Export Data','In Report tap download icon, or in Settings → Export & Import Data.'],
+      ['Backup & Restore','In Settings → Export & Import → backup to JSON then re-import if needed.'],
+    ];
+    body.innerHTML = `
+      <div class="info-block"><h4>${lang==='ID'?'Selamat Datang di POS Pro':'Welcome to POS Pro'}</h4>
+        <p>${lang==='ID'?'Ikuti langkah-langkah di bawah untuk memulai.':'Follow the steps below to get started.'}</p>
+      </div>
+      <div class="card">
+        ${steps.map((s,i) => `
+          <div class="help-step">
+            <div class="step-num">${i+1}</div>
+            <div class="step-text"><h4>${s[0]}</h4><p>${s[1]}</p></div>
+          </div>`).join('')}
+      </div>`;
+  }
+
+  else if (type === 'feature-request') {
+    title.textContent = t('lbl_featurereq');
+    body.innerHTML = `
+      <div class="info-block">
+        <h4>${lang==='ID'?'Punya ide fitur baru?':'Have a feature idea?'}</h4>
+        <p>${lang==='ID'?'Kami senang mendengar masukan Anda untuk membuat POS Pro lebih baik.':'We love hearing your feedback to make POS Pro better.'}</p>
+      </div>
+      <div class="field-wrap">
+        <div class="field-label">${lang==='ID'?'Judul Fitur':'Feature Title'}</div>
+        <input type="text" id="feat-title" class="fld" placeholder="${lang==='ID'?'Contoh: Laporan harian otomatis':'E.g.: Auto daily report'}">
+      </div>
+      <div class="field-wrap">
+        <div class="field-label">${lang==='ID'?'Deskripsi':'Description'}</div>
+        <textarea id="feat-desc" class="fld" rows="4" placeholder="${lang==='ID'?'Jelaskan fitur yang Anda inginkan...':'Describe the feature you want...'}" style="resize:none;line-height:1.5;"></textarea>
+      </div>
+      <button class="btn btn-primary" onclick="submitFeatureRequest()" style="margin-top:4px;">
+        <i data-lucide="send"></i> ${lang==='ID'?'Kirim via Email':'Send via Email'}
+      </button>`;
+  }
+
+  else if (type === 'contact') {
+    title.textContent = t('lbl_contact');
+    body.innerHTML = `
+      <div class="info-block">
+        <h4>Developer</h4>
+        <p>${lang==='ID'?'Hubungi kami untuk pertanyaan, laporan bug, atau kolaborasi.':'Contact us for questions, bug reports, or collaborations.'}</p>
+      </div>
+      <div class="card">
+        <div class="list-row">
+          <div class="left">
+            <div class="row-icon icon-blue"><i data-lucide="mail"></i></div>
+            <div>
+              <div class="row-label">Email</div>
+              <div class="row-sub">termireum@gmail.com</div>
+            </div>
+          </div>
+          <button class="btn btn-ghost btn-sm" style="width:auto;padding:7px 14px;" onclick="window.location.href='mailto:termireum@gmail.com'">
+            <i data-lucide="external-link"></i>
+          </button>
+        </div>
+      </div>
+      <p style="font-size:13px;color:var(--text3);text-align:center;margin-top:16px;line-height:1.6;">
+        ${lang==='ID'?'Kami biasanya merespons dalam 1-3 hari kerja.':'We typically respond within 1-3 business days.'}
+      </p>`;
+  }
+
+  else if (type === 'about') {
+    title.textContent = t('lbl_about');
+    body.innerHTML = `
+      <div style="text-align:center;padding:20px 0 16px;">
+        <div style="font-size:56px;margin-bottom:10px;">🛒</div>
+        <div style="font-size:22px;font-weight:800;letter-spacing:-0.5px;">POS Pro</div>
+        <div style="font-size:14px;color:var(--text3);margin-top:4px;">Version 2.0.0</div>
+      </div>
+      <div class="info-block">
+        <p>${lang==='ID'
+          ? 'POS Pro adalah aplikasi kasir modern untuk usaha kecil dan menengah. Dirancang dengan antarmuka iOS, mudah digunakan, dan bekerja sepenuhnya offline.'
+          : 'POS Pro is a modern point-of-sale app for small and medium businesses. Designed with iOS-style UI, easy to use, and works completely offline.'
+        }</p>
+      </div>
+      <div class="card">
+        <div class="list-row"><div class="left"><div class="row-label">${lang==='ID'?'Versi':'Version'}</div></div><div class="right" style="color:var(--text2);font-weight:600;">2.0.0</div></div>
+        <div class="divider"></div>
+        <div class="list-row"><div class="left"><div class="row-label">Developer</div></div><div class="right" style="color:var(--text2);">POS Pro Team</div></div>
+        <div class="divider"></div>
+        <div class="list-row"><div class="left"><div class="row-label">Email</div></div><div class="right" style="color:var(--blue);font-size:14px;">termireum@gmail.com</div></div>
+        <div class="divider"></div>
+        <div class="list-row"><div class="left"><div class="row-label">${lang==='ID'?'Penyimpanan':'Storage'}</div></div><div class="right" style="color:var(--text2);">Local / Offline</div></div>
+      </div>`;
+  }
+
+  else if (type === 'disclaimer') {
+    title.textContent = t('lbl_disclaimer');
+    body.innerHTML = `
+      <div class="card" style="padding:16px;border-radius:var(--r-xl);">
+        <p style="font-size:15px;font-weight:700;margin:0 0 10px;">${lang==='ID'?'Penafian':'Disclaimer'}</p>
+        <p style="font-size:14px;color:var(--text2);line-height:1.7;margin:0 0 12px;">${lang==='ID'
+          ? 'POS Pro disediakan "sebagaimana adanya" tanpa jaminan apapun, baik tersurat maupun tersirat. Penggunaan aplikasi ini sepenuhnya merupakan risiko pengguna.'
+          : 'POS Pro is provided "as is" without any warranties, either expressed or implied. Use of this application is entirely at the user\'s own risk.'
+        }</p>
+        <p style="font-size:14px;color:var(--text2);line-height:1.7;margin:0 0 12px;">${lang==='ID'
+          ? 'Pengembang tidak bertanggung jawab atas kerugian data, kehilangan keuntungan, atau kerusakan lainnya yang mungkin timbul dari penggunaan aplikasi ini.'
+          : 'The developer is not responsible for data loss, loss of profit, or other damages that may arise from the use of this application.'
+        }</p>
+        <p style="font-size:14px;color:var(--text2);line-height:1.7;margin:0;">${lang==='ID'
+          ? 'Disarankan untuk melakukan backup data secara berkala menggunakan fitur ekspor yang tersedia.'
+          : 'It is recommended to back up your data regularly using the export feature provided.'
+        }</p>
+      </div>
+      <button class="btn btn-ghost" onclick="closeModal()" style="margin-top:10px;">${lang==='ID'?'Tutup':'Close'}</button>`;
+  }
+
+  else if (type === 'privacy') {
+    title.textContent = t('lbl_privacy');
+    body.innerHTML = `
+      <div class="card" style="padding:16px;border-radius:var(--r-xl);">
+        <p style="font-size:15px;font-weight:700;margin:0 0 10px;">${lang==='ID'?'Kebijakan Privasi':'Privacy Policy'}</p>
+        ${[
+          [lang==='ID'?'Penyimpanan Data Lokal':'Local Data Storage',
+           lang==='ID'?'Semua data (produk, transaksi, pengaturan) disimpan secara lokal di perangkat Anda menggunakan localStorage. Tidak ada data yang dikirimkan ke server eksternal.'
+                      :'All data (products, transactions, settings) is stored locally on your device using localStorage. No data is transmitted to external servers.'],
+          [lang==='ID'?'Tidak Ada Pengumpulan Data':'No Data Collection',
+           lang==='ID'?'Kami tidak mengumpulkan informasi pribadi, analitik penggunaan, atau data apapun dari aplikasi ini.'
+                      :'We do not collect personal information, usage analytics, or any data from this application.'],
+          [lang==='ID'?'Keamanan Data':'Data Security',
+           lang==='ID'?'Karena data tersimpan di perangkat Anda, keamanan data bergantung pada keamanan perangkat Anda. Lakukan backup rutin.'
+                      :'Since data is stored on your device, security depends on your device security. Perform regular backups.'],
+          [lang==='ID'?'Gambar Produk':'Product Images',
+           lang==='ID'?'Gambar produk yang Anda unggah disimpan lokal dalam format base64. Tidak ada unggahan ke server.'
+                      :'Product images you upload are stored locally in base64 format. No upload to any server.'],
+        ].map(([h,p]) => `<div style="margin-bottom:14px;"><p style="font-size:14px;font-weight:700;margin:0 0 4px;color:var(--text);">${h}</p><p style="font-size:13px;color:var(--text2);line-height:1.7;margin:0;">${p}</p></div>`).join('<div class="divider" style="margin:12px 0;"></div>')}
+      </div>
+      <button class="btn btn-ghost" onclick="closeModal()" style="margin-top:10px;">${lang==='ID'?'Tutup':'Close'}</button>`;
+  }
+
+  else if (type === 'terms') {
+    title.textContent = t('lbl_terms');
+    body.innerHTML = `
+      <div class="card" style="padding:16px;border-radius:var(--r-xl);">
+        <p style="font-size:15px;font-weight:700;margin:0 0 10px;">${lang==='ID'?'Syarat & Ketentuan Penggunaan':'Terms of Use'}</p>
+        ${[
+          [lang==='ID'?'1. Penerimaan Syarat':'1. Acceptance of Terms',
+           lang==='ID'?'Dengan menggunakan POS Pro, Anda menyetujui syarat dan ketentuan ini.'
+                      :'By using POS Pro, you agree to these terms and conditions.'],
+          [lang==='ID'?'2. Penggunaan yang Diizinkan':'2. Permitted Use',
+           lang==='ID'?'POS Pro dirancang untuk penggunaan bisnis yang sah. Anda bertanggung jawab memastikan penggunaan aplikasi sesuai dengan peraturan yang berlaku.'
+                      :'POS Pro is designed for lawful business use. You are responsible for ensuring use complies with applicable regulations.'],
+          [lang==='ID'?'3. Tanggung Jawab Data':'3. Data Responsibility',
+           lang==='ID'?'Pengguna bertanggung jawab penuh atas data yang dimasukkan dan disimpan dalam aplikasi. Lakukan backup data secara berkala.'
+                      :'Users are fully responsible for data entered and stored in the application. Back up your data regularly.'],
+          [lang==='ID'?'4. Pembatasan Tanggung Jawab':'4. Limitation of Liability',
+           lang==='ID'?'Pengembang tidak bertanggung jawab atas kerugian yang timbul dari penggunaan atau ketidakmampuan menggunakan aplikasi ini.'
+                      :'The developer is not liable for any damages arising from the use or inability to use this application.'],
+          [lang==='ID'?'5. Perubahan Syarat':'5. Changes to Terms',
+           lang==='ID'?'Kami berhak mengubah syarat ini kapan saja. Penggunaan berkelanjutan berarti Anda menerima perubahan tersebut.'
+                      :'We reserve the right to modify these terms at any time. Continued use means you accept the changes.'],
+        ].map(([h,p]) => `<div style="margin-bottom:14px;"><p style="font-size:14px;font-weight:700;margin:0 0 4px;color:var(--text);">${h}</p><p style="font-size:13px;color:var(--text2);line-height:1.7;margin:0;">${p}</p></div>`).join('<div class="divider" style="margin:12px 0;"></div>')}
+      </div>
+      <button class="btn btn-ghost" onclick="closeModal()" style="margin-top:10px;">${lang==='ID'?'Tutup':'Close'}</button>`;
+  }
+
+  else if (type === 'confirm') { /* handled by openConfirm */ }
+
+  showOverlay();
+  lucide.createIcons();
+}
+
+function renderCatModal(body) {
+  body.innerHTML = `
+    <div style="display:flex;gap:8px;margin-bottom:12px;">
+      <input type="text" id="new-cat-inp" class="fld" placeholder="${lang==='ID'?'Nama kategori baru':'New category name'}" style="flex:1;">
+      <button class="btn btn-primary btn-sm" style="width:auto;padding:10px 16px;" onclick="addCategory()">
+        <i data-lucide="plus"></i>
+      </button>
+    </div>
+    <div class="card" id="cat-list">
+      ${db.categories.map((c,i) => `
+        <div class="list-row" style="padding:10px 14px;">
+          <div class="left"><div class="row-icon icon-blue" style="width:28px;height:28px;"><i data-lucide="tag"></i></div><div class="row-label">${escHtml(c)}</div></div>
+          <button class="delete-btn" onclick="deleteCat(${i})"><i data-lucide="trash-2"></i></button>
+        </div>
+        ${i<db.categories.length-1?'<div class="divider"></div>':''}`).join('')}
+    </div>`;
+  lucide.createIcons();
+}
+
+function addCategory() {
+  const inp = $('new-cat-inp');
+  const name = inp.value.trim();
+  if (!name) return;
+  if (db.categories.includes(name)) { toast(lang==='ID'?'Kategori sudah ada':'Category already exists','alert-circle',false); return; }
+  db.categories.push(name);
+  inp.value = '';
+  save();
+  renderCatModal($('sheet-body'));
+  toast(lang==='ID'?'Kategori ditambahkan':'Category added');
+}
+
+function deleteCat(idx) {
+  db.categories.splice(idx, 1);
+  save();
+  renderCatModal($('sheet-body'));
+}
+
+// ===== PAY METHODS =====
+function renderPayExtra(total, qrisImg) {
+  const extra = $('pay-method-extra');
+  if (!extra) return;
+  if (payMethod === 'cash') {
+    extra.innerHTML = `
+      <div class="cash-section">
+        <div class="field-label">${lang==='ID'?'Uang Diterima':'Cash Received'}</div>
+        <input type="number" id="cash-in" class="fld" placeholder="0" inputmode="numeric" oninput="calcKembalian(${total})" style="margin-bottom:8px;">
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">
+          ${[10000,20000,50000,100000].map(v => `<button class="btn btn-ghost btn-sm" style="width:auto;flex:1;min-width:60px;font-size:12px;" onclick="$('cash-in').value=${v};calcKembalian(${total})">${v>=1000?(v/1000)+'rb':v}</button>`).join('')}
+        </div>
+        <div class="kembalian-row" id="kembalian-row" style="display:none;">
+          <span class="kembalian-label">${lang==='ID'?'Kembalian':'Change'}</span>
+          <span class="kembalian-val" id="kembalian-val">Rp 0</span>
+        </div>
+      </div>`;
+  } else if (payMethod === 'qris') {
+    extra.innerHTML = qrisImg
+      ? `<div class="qris-box"><p class="qris-label">Scan QRIS ${lang==='ID'?'untuk bayar':'to pay'}</p><img src="${qrisImg}"></div>`
+      : `<div style="background:var(--card2);border-radius:var(--r-md);padding:14px;text-align:center;color:var(--text3);font-size:14px;margin-bottom:10px;">⚠️ ${lang==='ID'?'QRIS belum dipasang. Pasang di Setelan.':'QRIS not configured. Set up in Settings.'}</div>`;
+  } else {
+    extra.innerHTML = `<div class="info-block" style="margin-bottom:10px;"><p style="font-size:14px;">${lang==='ID'?'Konfirmasi penerimaan pembayaran sebelum melanjutkan.':'Confirm payment receipt before proceeding.'}</p></div>`;
+  }
+  lucide.createIcons();
+}
+
+function selectPayMethod(m) {
+  payMethod = m;
+  const {total} = calcCartTotal();
+  const qrisImg = localStorage.getItem('pos_qris');
+  document.querySelectorAll('.pay-method').forEach(el => el.classList.remove('selected'));
+  event.currentTarget.classList.add('selected');
+  renderPayExtra(total, qrisImg);
+}
+
+function calcKembalian(total) {
+  const in_ = parseFloat($('cash-in')?.value) || 0;
+  const row = $('kembalian-row');
+  if (row) {
+    if (in_ >= total) {
+      row.style.display = 'flex';
+      $('kembalian-val').textContent = fmt(in_ - total);
+    } else {
+      row.style.display = 'none';
+    }
+  }
+}
+
+function processCheckout() {
+  const {sub, disc, total} = calcCartTotal();
+  if (payMethod === 'cash') {
+    const cashIn = parseFloat($('cash-in')?.value) || 0;
+    if (cashIn < total) { showFieldError('cash-in'); return; }
+  }
+  const desc = cart.map(i => `${i.qty}× ${i.name}`).join(', ');
+  const methodLabels = { cash: lang==='ID'?'Tunai':'Cash', qris: 'QRIS', transfer: 'Transfer', debit: 'Debit' };
+
+  // Reduce stock
+  cart.forEach(ci => {
+    const item = db.items.find(i => i.id === ci.id);
+    if (item && typeof item.stock === 'number') item.stock = Math.max(0, item.stock - ci.qty);
+  });
+
+  db.sales.unshift({
+    date: new Date().toLocaleString('id-ID'),
+    total, sub, disc,
+    desc, method: methodLabels[payMethod] || payMethod,
+    items: cart.map(i => ({name:i.name,qty:i.qty,price:i.price}))
+  });
+  save();
+  cart = [];
+  globalDiscount = 0;
+  closeModal();
+  toast(t('msg_sukses'));
+  renderAll();
+}
+
+function applyGlobalDiscount() {
+  globalDiscountType = $('disc-type').value;
+  globalDiscount = parseFloat($('disc-val').value) || 0;
+  closeModal();
+  toast(lang==='ID'?`Diskon ${globalDiscountType==='pct'?globalDiscount+'%':fmt(globalDiscount)} diterapkan`:`Discount ${globalDiscountType==='pct'?globalDiscount+'%':fmt(globalDiscount)} applied`,'tag');
+}
+
+// ===== MODAL HELPERS =====
+function showOverlay() {
+  const o = $('overlay');
+  o.style.display = 'flex';
+  requestAnimationFrame(() => requestAnimationFrame(() => o.classList.add('active')));
+}
+function closeModal() {
+  const o = $('overlay');
+  o.classList.remove('active');
+  setTimeout(() => { o.style.display = 'none'; }, 380);
+}
+
+function openConfirm(heading, body_, onConfirm) {
+  const sheet = $('sheet-body');
+  $('sheet-title').textContent = lang==='ID' ? 'Konfirmasi' : 'Confirm';
+  sheet.innerHTML = `
+    <p style="font-size:16px;color:var(--text2);margin:0 0 12px;">${heading}</p>
+    <p style="font-size:14px;color:var(--text3);margin:0 0 18px;">${body_}</p>
+    <div class="confirm-btns">
+      <button class="btn btn-ghost" onclick="closeModal()">${lang==='ID'?'Batal':'Cancel'}</button>
+      <button class="btn btn-danger" id="confirm-yes">${lang==='ID'?'Hapus':'Delete'}</button>
+    </div>`;
+  showOverlay(); lucide.createIcons();
+  setTimeout(() => { $('confirm-yes') && ($('confirm-yes').onclick = onConfirm); }, 100);
+}
+
+// ===== SETTINGS ACTIONS =====
+function saveBizName() {
+  bizName = ($('inp-biz')?.value || '').trim() || 'MY STORE';
+  localStorage.setItem('pos_biz', bizName);
+  closeModal(); renderAll();
+  toast(lang==='ID'?'Nama usaha disimpan':'Business name saved');
+}
+
+function setLang(l) {
+  lang = l;
+  localStorage.setItem('pos_lang', l);
+  closeModal(); renderAll();
+}
+
+function saveTax() {
+  taxRate = parseFloat($('inp-tax')?.value) || 0;
+  localStorage.setItem('pos_tax', taxRate);
+  closeModal(); renderAll();
+  toast(lang==='ID'?'Pengaturan pajak disimpan':'Tax settings saved');
+}
+
+function uploadQris(input) {
+  if (!input.files[0]) return;
+  const r = new FileReader();
+  r.onload = e => {
+    localStorage.setItem('pos_qris', e.target.result);
+    openModal('qris');
+    toast(lang==='ID'?'QRIS berhasil dipasang':'QRIS configured');
+  };
+  r.readAsDataURL(input.files[0]);
+}
+
+function removeQris() {
+  localStorage.removeItem('pos_qris');
+  openModal('qris');
+  toast(lang==='ID'?'QRIS dihapus':'QRIS removed','trash-2');
+}
+
+function confirmClearSales() {
+  openConfirm(
+    lang==='ID'?'Hapus semua laporan?':'Delete all reports?',
+    lang==='ID'?'Data transaksi akan hilang permanen.':'All transaction data will be permanently deleted.',
+    () => {
+      db.sales = [];
+      save(); closeModal();
+      toast(t('msg_hapus'),'trash-2');
+      renderAll();
+    }
+  );
+}
+
+function submitFeatureRequest() {
+  const ft = $('feat-title')?.value.trim();
+  const fd = $('feat-desc')?.value.trim();
+  if (!ft) { showFieldError('feat-title'); return; }
+  const subject = encodeURIComponent('POS Pro - Feature Request: ' + ft);
+  const body = encodeURIComponent((fd || '') + '\n\n-- Sent from POS Pro v2.0.0');
+  window.location.href = `mailto:termireum@gmail.com?subject=${subject}&body=${body}`;
+}
+
+// ===== EXPORT / IMPORT =====
+function exportJSON() {
+  const blob = new Blob([JSON.stringify(db, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `POS_Pro_Backup_${new Date().toLocaleDateString('id-ID').replace(/\//g,'-')}.json`;
+  a.click();
+  toast(lang==='ID'?'Backup diekspor':'Backup exported');
+}
+
+function exportCSV() {
+  if (db.sales.length === 0) { toast(lang==='ID'?'Tidak ada data':'No data','alert-circle',false); return; }
+  const headers = lang==='ID'
+    ? ['No','Tanggal','Total','Subtotal','Diskon','Metode','Detail Item']
+    : ['No','Date','Total','Subtotal','Discount','Method','Item Detail'];
+  const rows = [headers, ...db.sales.map((s,i) => [
+    i+1, s.date, s.total, s.sub||s.total, s.disc||0, s.method||'-', s.desc
+  ])];
+  const csv = '\uFEFF' + rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\r\n');
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `POS_Pro_Report_${new Date().toLocaleDateString('id-ID').replace(/\//g,'-')}.csv`;
+  a.click();
+  toast(lang==='ID'?'CSV diekspor':'CSV exported');
+}
+
+function exportPDF() {
+  if (db.sales.length === 0) { toast(lang==='ID'?'Tidak ada data':'No data','alert-circle',false); return; }
+  const totalRev = db.sales.reduce((s,x)=>s+x.total,0);
+  const now = new Date().toLocaleDateString(lang==='ID'?'id-ID':'en-US', {year:'numeric',month:'long',day:'numeric'});
+
+  const printContent = `<!DOCTYPE html><html><head><meta charset="UTF-8">
+  <title>POS Pro Report</title>
+  <style>
+    body { font-family: -apple-system, Arial, sans-serif; margin: 0; padding: 24px; font-size: 12px; color: #000; }
+    h1 { font-size: 20px; font-weight: 800; margin: 0 0 2px; }
+    .header { margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 12px; }
+    .biz { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+    .meta { font-size: 11px; color: #666; }
+    .summary { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 20px; }
+    .sum-card { border: 1px solid #ddd; border-radius: 8px; padding: 10px; }
+    .sum-label { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
+    .sum-val { font-size: 16px; font-weight: 800; margin-top: 2px; }
+    table { width: 100%; border-collapse: collapse; }
+    th { background: #f5f5f5; padding: 8px; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.3px; border: 0.5px solid #ddd; }
+    td { padding: 7px 8px; border: 0.5px solid #eee; font-size: 11px; }
+    tr:nth-child(even) td { background: #fafafa; }
+    .total-row td { font-weight: 800; background: #f0f4ff; border-top: 2px solid #007AFF; }
+    .footer { margin-top: 20px; font-size: 10px; color: #999; text-align: center; }
+  </style>
+  </head><body>
+  <div class="header">
+    <div class="biz">${escHtml(bizName)}</div>
+    <h1>POS Pro — ${lang==='ID'?'Laporan Transaksi':'Transaction Report'}</h1>
+    <div class="meta">${lang==='ID'?'Dicetak':'Printed'}: ${now} · ${db.sales.length} ${lang==='ID'?'transaksi':'transactions'}</div>
+  </div>
+  <div class="summary">
+    <div class="sum-card"><div class="sum-label">${lang==='ID'?'Total Pendapatan':'Total Revenue'}</div><div class="sum-val">Rp ${totalRev.toLocaleString('id-ID')}</div></div>
+    <div class="sum-card"><div class="sum-label">${lang==='ID'?'Total Transaksi':'Total Transactions'}</div><div class="sum-val">${db.sales.length}</div></div>
+    <div class="sum-card"><div class="sum-label">${lang==='ID'?'Rata-rata':'Average'}</div><div class="sum-val">Rp ${db.sales.length>0?Math.round(totalRev/db.sales.length).toLocaleString('id-ID'):'0'}</div></div>
+  </div>
+  <table>
+    <thead><tr><th>No</th><th>${lang==='ID'?'Tanggal':'Date'}</th><th>${lang==='ID'?'Total':'Total'}</th><th>${lang==='ID'?'Metode':'Method'}</th><th>${lang==='ID'?'Item':'Items'}</th></tr></thead>
+    <tbody>
+    ${db.sales.map((s,i) => `<tr><td>${i+1}</td><td>${s.date}</td><td>Rp ${s.total.toLocaleString('id-ID')}</td><td>${s.method||'-'}</td><td>${escHtml(s.desc)}</td></tr>`).join('')}
+    <tr class="total-row"><td colspan="2">${lang==='ID'?'TOTAL':'TOTAL'}</td><td>Rp ${totalRev.toLocaleString('id-ID')}</td><td></td><td></td></tr>
+    </tbody>
+  </table>
+  <div class="footer">POS Pro v2.0.0 · termireum@gmail.com</div>
+  </body></html>`;
+
+  const win = window.open('', '_blank');
+  if (win) {
+    win.document.write(printContent);
+    win.document.close();
+    win.focus();
+    setTimeout(() => win.print(), 500);
+  }
+  toast(lang==='ID'?'PDF siap dicetak':'PDF ready to print');
+}
+
+function importData(input) {
+  const r = new FileReader();
+  r.onload = e => {
+    try {
+      const parsed = JSON.parse(e.target.result);
+      db = parsed;
+      if (!db.categories) db.categories = ['Makanan','Minuman','Lainnya'];
+      save(); closeModal(); renderAll();
+      toast(t('msg_impor'));
+    } catch {
+      toast(lang==='ID'?'File tidak valid':'Invalid file','alert-circle',false);
+    }
+  };
+  r.readAsText(input.files[0]);
+}
+
+// ===== CHART RESIZE =====
+window.addEventListener('resize', () => {
+  if ($('view-laporan').classList.contains('active')) setTimeout(drawChart, 100);
+});
+
+// ===== INIT =====
+window.addEventListener('load', () => {
+  applyTheme(theme, false);
+  renderAll();
+});
+</script>
+</body>
+</html>
