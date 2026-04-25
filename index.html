@@ -531,7 +531,7 @@ canvas#sales-chart { width: 100% !important; max-height: 180px; }
 
 <!-- ===== SPLASHSCREEN ===== -->
 <div id="splashscreen">
-  <div class="splash-logo">Caseer</div>
+  <div class="splash-logo">Casser</div>
 </div>
 
 <div class="viewport" id="app-root" style="display:none;flex-direction:column;">
@@ -960,17 +960,17 @@ function enterApp() {
   const root = $('app-root');
   splash.classList.add('hide');
   root.style.display = 'flex';
-  setTimeout(() => { splash.style.display = 'none'; }, 500);
+  setTimeout(() => { splash.style.display = 'none'; }, 100);
   applyTheme(theme, false);
   renderAll();
 }
 
-// Auto-dismiss splash after 3s (professional standard)
+// Auto-dismiss splash after 1s (professional standard)
 setTimeout(() => {
   if ($('splashscreen') && !$('splashscreen').classList.contains('hide')) {
     enterApp();
   }
-}, 3000);
+}, 1000);
 
 // ===== NAV =====
 function goNav(view, btn) {
@@ -1691,8 +1691,8 @@ function openModal(type) {
   else if (type === 'lang') {
     title.textContent = t('set_bahasa');
     body.innerHTML = `
-      <button class="btn ${lang==='ID'?'btn-primary':'btn-ghost'}" onclick="setLang('ID')" style="margin-bottom:10px;">🇮🇩 Indonesia</button>
-      <button class="btn ${lang==='EN'?'btn-primary':'btn-ghost'}" onclick="setLang('EN')">🇺🇸 English</button>`;
+      <button class="btn ${lang==='ID'?'btn-primary':'btn-ghost'}" onclick="setLang('ID')" style="margin-bottom:10px;">Indonesia</button>
+      <button class="btn ${lang==='EN'?'btn-primary':'btn-ghost'}" onclick="setLang('EN')">English</button>`;
   }
 
   else if (type === 'data') {
