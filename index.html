@@ -2135,6 +2135,19 @@ window.addEventListener('load', () => {
   // Splash will handle init via enterApp()
   lucide.createIcons(); // initial icons for splash
 });
+  window.addEventListener('load', () => {
+    const splash = document.getElementById('splashscreen');
+    
+    // Memberikan jeda sedikit agar user sempat melihat splash
+    setTimeout(() => {
+        splash.classList.add('fade-out');
+        
+        // Hapus elemen dari DOM setelah animasi selesai (0.5s)
+        setTimeout(() => {
+            splash.style.display = 'none';
+        }, 500);
+    }, 1000); 
+});
 </script>
 </body>
 </html>
