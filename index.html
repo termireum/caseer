@@ -933,6 +933,30 @@ let cashierName = localStorage.getItem('pos_cashier') || '';
 let theme = localStorage.getItem('pos_theme') || 'light';
 let db = JSON.parse(localStorage.getItem('pos_db2')) || { items: [], sales: [], categories: ['Makanan','Minuman','Lainnya'] };
 if (!db.categories) db.categories = ['Makanan','Minuman','Lainnya'];
+// Migrate old locale-string dates to ISO format
+if (db.sales && db.sales.length > 0) {
+  let migrated = false;
+  db.sales.forEach(s => {
+    if (s.date && !s.date.includes('T') && !s.date.match(/^\d{4}-\d{2}-\d{2}/)) {
+      // Old locale format, convert to ISO
+      try {
+        const str = s.date.trim();
+        const commaIdx = str.indexOf(', ');
+        let datePart = commaIdx !== -1 ? str.substring(0, commaIdx) : str;
+        let timePart = commaIdx !== -1 ? str.substring(commaIdx + 2) : '00.00.00';
+        const dp = datePart.split('/');
+        if (dp.length === 3) {
+          const [d, m, y] = dp;
+          const timeFixed = timePart.replace(/\./g, ':');
+          const iso = `${String(y).padStart(4,'0')}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}T${timeFixed}`;
+          const parsed = new Date(iso);
+          if (!isNaN(parsed.getTime())) { s.date = parsed.toISOString(); migrated = true; }
+        }
+      } catch(e) {}
+    }
+  });
+  if (migrated) localStorage.setItem('pos_db2', JSON.stringify(db));
+}
 let cart = [];
 let tempImg = null;
 let currentFilter = '';
@@ -1399,26 +1423,54 @@ function setReportFilter(f, btn) {
 
 function getFilteredSales() {
   const now = new Date();
+  const todayStr = now.toDateString();
+  const nowYear = now.getFullYear();
+  const nowMonth = now.getMonth();
   return db.sales.filter(s => {
     const d = parseSaleDate(s.date);
     if (!d) return false;
-    if (reportFilter === 'daily') return d.toDateString() === now.toDateString();
-    else if (reportFilter === 'weekly') { const wa=new Date(now); wa.setDate(now.getDate()-6); return d>=wa; }
-    else if (reportFilter === 'monthly') return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();
-    else return d.getFullYear()===now.getFullYear();
+    if (reportFilter === 'daily') return d.toDateString() === todayStr;
+    else if (reportFilter === 'weekly') {
+      const wa = new Date(now);
+      wa.setDate(now.getDate() - 6);
+      wa.setHours(0, 0, 0, 0);
+      return d >= wa;
+    }
+    else if (reportFilter === 'monthly') return d.getMonth() === nowMonth && d.getFullYear() === nowYear;
+    else return d.getFullYear() === nowYear;
   });
 }
 
 function parseSaleDate(dateStr) {
   try {
-    const parts = dateStr.split(', ');
-    const dateParts = parts[0].split('/');
-    if (dateParts.length === 3) {
-      const [d,m,y] = dateParts;
-      const timePart = parts[1] || '00:00:00';
-      return new Date(`${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}T${timePart}`);
+    if (!dateStr) return null;
+    const str = dateStr.trim();
+    // New format: ISO 8601 (e.g. "2025-04-25T19:05:32.000Z")
+    if (str.includes('T') || str.match(/^\d{4}-\d{2}-\d{2}/)) {
+      const d = new Date(str);
+      return isNaN(d.getTime()) ? null : d;
     }
-    return new Date(dateStr);
+    // Legacy id-ID locale format: "25/4/2025, 19.05.32"
+    let datePart, timePart;
+    const commaIdx = str.indexOf(', ');
+    if (commaIdx !== -1) {
+      datePart = str.substring(0, commaIdx);
+      timePart = str.substring(commaIdx + 2);
+    } else {
+      const spaceIdx = str.lastIndexOf(' ');
+      datePart = spaceIdx !== -1 ? str.substring(0, spaceIdx) : str;
+      timePart = spaceIdx !== -1 ? str.substring(spaceIdx + 1) : '00.00.00';
+    }
+    const dp = datePart.split('/');
+    if (dp.length === 3) {
+      const [d, m, y] = dp;
+      const timeFixed = (timePart || '00.00.00').replace(/\./g, ':');
+      const iso = `${String(y).padStart(4,'0')}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}T${timeFixed}`;
+      const result = new Date(iso);
+      if (!isNaN(result.getTime())) return result;
+    }
+    const fallback = new Date(dateStr);
+    return isNaN(fallback.getTime()) ? null : fallback;
   } catch { return null; }
 }
 
@@ -1531,9 +1583,9 @@ function renderReport() {
       let displayDate = s.date;
       try {
         const d = parseSaleDate(s.date);
-        if (d) {
+        if (d && !isNaN(d.getTime())) {
           displayDate = d.toLocaleDateString(lang==='ID'?'id-ID':'en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'})
-            + ', ' + d.toLocaleTimeString(lang==='ID'?'id-ID':'en-US',{hour:'2-digit',minute:'2-digit',hour12:false});
+            + ' · ' + d.toLocaleTimeString(lang==='ID'?'id-ID':'en-US',{hour:'2-digit',minute:'2-digit',hour12:false});
         }
       } catch(e) { displayDate = s.date; }
       const cashierLabel = s.cashier ? `<div style="font-size:11px;color:var(--text3);margin-top:3px;display:flex;align-items:center;gap:4px;"><svg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2'/><circle cx='12' cy='7' r='4'/></svg>${escHtml(s.cashier)}</div>` : '';
@@ -2057,7 +2109,7 @@ function processCheckout() {
   });
 
   db.sales.unshift({
-    date: new Date().toLocaleString('id-ID'),
+    date: new Date().toISOString(),
     total, sub, disc, desc,
     method: methodLabels[payMethod] || payMethod,
     items: cart.map(i => ({name:i.name,qty:i.qty,price:i.price})),
