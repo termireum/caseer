@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Caseer</title>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap" rel="stylesheet">
 <style>
 /* ===== DESIGN TOKENS (iOS-style) ===== */
 :root {
@@ -100,11 +101,10 @@ input, select, textarea { font-family: inherit; }
 }
 #splashscreen.hide { opacity: 0; transform: scale(1.06); pointer-events: none; }
 .splash-logo {
-  font-size: 52px; font-weight: 800;
-  color: white; letter-spacing: -2px;
-  font-family: -apple-system, 'SF Pro Display', system-ui, sans-serif;
+  font-size: 52px; font-weight: 600;
+  color: white; letter-spacing: -1px;
+  font-family: 'Poppins', -apple-system, 'SF Pro Display', system-ui, sans-serif;
   margin-bottom: 8px;
-  #animation: splashPop 0.6s cubic-bezier(0.34,1.56,0.64,1) 0.2s both;
 }
 .splash-tagline {
   font-size: 16px; color: rgba(255,255,255,0.72);
@@ -358,9 +358,9 @@ canvas#sales-chart { width: 100% !important; max-height: 180px; }
 .premium-info-block p { margin: 0; font-size: 14px; color: var(--text2); line-height: 1.6; }
 
 /* ===== MODAL / SHEET ===== */
-.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.48); z-index: 1000; display: flex; align-items: flex-end; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; }
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.48); z-index: 1000; display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; }
 .overlay.active { opacity: 1; pointer-events: auto; }
-.sheet { width: 100%; background: var(--card); border-radius: 28px 28px 0 0; padding: 0 0 var(--safe-bottom); transform: translateY(100%); transition: transform 0.36s cubic-bezier(0.32, 0.72, 0, 1); max-height: 92vh; display: flex; flex-direction: column; overflow: hidden; }
+.sheet { width: 100%; max-width: 480px; background: var(--card); border-radius: 28px 28px 0 0; padding: 0 0 var(--safe-bottom); transform: translateY(100%); transition: transform 0.36s cubic-bezier(0.32, 0.72, 0, 1); max-height: 92vh; display: flex; flex-direction: column; overflow: hidden; }
 .overlay.active .sheet { transform: translateY(0); }
 .sheet-handle { width: 36px; height: 5px; background: var(--card3); border-radius: 3px; margin: 10px auto 0; flex-shrink: 0; }
 .sheet-header { padding: 14px 18px 12px; border-bottom: 0.5px solid var(--sep); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
@@ -403,7 +403,7 @@ canvas#sales-chart { width: 100% !important; max-height: 180px; }
 /* ===== CATEGORIES iOS POPUP ===== */
 .ios-action-sheet {
   position: fixed; inset: 0; z-index: 2000;
-  display: flex; flex-direction: column; justify-content: flex-end;
+  display: flex; flex-direction: column; justify-content: flex-end; align-items: center;
   background: rgba(0,0,0,0); pointer-events: none;
   transition: background 0.28s ease;
 }
@@ -413,6 +413,7 @@ canvas#sales-chart { width: 100% !important; max-height: 180px; }
   padding: 0 8px calc(var(--safe-bottom) + 8px);
   transform: translateY(100%);
   transition: transform 0.36s cubic-bezier(0.32, 0.72, 0, 1);
+  width: 100%; max-width: 480px;
 }
 .ios-action-sheet.active .ios-action-sheet-content { transform: translateY(0); }
 .ios-sheet-group {
@@ -661,6 +662,11 @@ canvas#sales-chart { width: 100% !important; max-height: 180px; }
           <div class="right chevron"><i data-lucide="chevron-right"></i></div>
         </div>
         <div class="divider"></div>
+        <div class="list-row tappable" onclick="openModal('cashierName')">
+          <div class="left"><div class="row-icon icon-blue"><i data-lucide="user-round"></i></div><div><div class="row-label" id="lbl-namakasir">Nama Kasir</div><div class="row-sub" id="disp-cashier">—</div></div></div>
+          <div class="right chevron"><i data-lucide="chevron-right"></i></div>
+        </div>
+        <div class="divider"></div>
         <div class="list-row tappable" onclick="openModal('qris')">
           <div class="left"><div class="row-icon icon-green"><i data-lucide="qr-code"></i></div><div><div class="row-label" id="lbl-qris">Setup QRIS</div><div class="row-sub" id="disp-qris-status">—</div></div></div>
           <div class="right chevron"><i data-lucide="chevron-right"></i></div>
@@ -857,6 +863,7 @@ const T = {
     empty_stok:"Belum ada produk. Tambahkan di atas.",
     empty_laporan:"Belum ada transaksi.",
     namatoko:"Nama Usaha", set_qris:"Setup QRIS", set_tampilan:"Tampilan",
+    namakasir:"Nama Kasir",
     set_bahasa:"Bahasa", set_data:"Ekspor & Impor Data",
     set_hapus:"Hapus Semua Laporan", set_privasi:"Kebijakan Privasi",
     msg_sukses:"Pembayaran Berhasil! 🎉",
@@ -891,6 +898,7 @@ const T = {
     empty_stok:"No products yet. Add one above.",
     empty_laporan:"No transactions yet.",
     namatoko:"Business Name", set_qris:"QRIS Setup", set_tampilan:"Appearance",
+    namakasir:"Cashier Name",
     set_bahasa:"Language", set_data:"Export & Import Data",
     set_hapus:"Delete All Reports", set_privasi:"Privacy Policy",
     msg_sukses:"Payment Successful! 🎉",
@@ -921,6 +929,7 @@ const T = {
 // ===== STATE =====
 let lang = localStorage.getItem('pos_lang') || 'ID';
 let bizName = localStorage.getItem('pos_biz') || 'MY STORE';
+let cashierName = localStorage.getItem('pos_cashier') || '';
 let theme = localStorage.getItem('pos_theme') || 'light';
 let db = JSON.parse(localStorage.getItem('pos_db2')) || { items: [], sales: [], categories: ['Makanan','Minuman','Lainnya'] };
 if (!db.categories) db.categories = ['Makanan','Minuman','Lainnya'];
@@ -1004,7 +1013,7 @@ function applyLang() {
     'lbl-help':'lbl_help','lbl-contact':'lbl_contact','lbl-featurereq':'lbl_featurereq',
     'lbl-about':'lbl_about','lbl-disclaimer':'lbl_disclaimer',
     'lbl-privacy':'lbl_privacy','lbl-terms':'lbl_terms','lbl-tax':'lbl_tax',
-    'lbl-data-local':'lbl_data_local','lbl-namatoko':'namatoko','lbl-qris':'set_qris',
+    'lbl-data-local':'lbl_data_local','lbl-namatoko':'namatoko','lbl-namakasir':'namakasir','lbl-qris':'set_qris',
     'lbl-tampilan':'set_tampilan','lbl-bahasa':'set_bahasa','lbl-datamanage':'set_data',
     'lbl-hapuslaporan':'set_hapus',
     'st-sec-toko':'st_toko','st-sec-display':'st_display','st-sec-data':'st_data','st-sec-about':'st_about',
@@ -1497,11 +1506,12 @@ function renderReport() {
   const rev = filtered.reduce((s,x)=>s+x.total,0);
   const txn = filtered.length;
   const avg = txn > 0 ? rev/txn : 0;
+  const allRev = allSales.reduce((s,x)=>s+x.total,0);
   if($('report-summary')) $('report-summary').innerHTML = `
     <div class="summary-card"><div class="summary-label">${t('lbl_total_penjualan')}</div><div class="summary-value blue sm">${fmt(rev)}</div></div>
     <div class="summary-card"><div class="summary-label">${t('lbl_total_transaksi')}</div><div class="summary-value">${txn}</div></div>
     <div class="summary-card"><div class="summary-label">${t('lbl_rata')}</div><div class="summary-value sm">${txn>0?fmt(avg):'-'}</div></div>
-    <div class="summary-card"><div class="summary-label">${lang==='ID'?'Total Keseluruhan':'All Time'}</div><div class="summary-value sm">${fmt(allSales.reduce((s,x)=>s+x.total,0))}</div></div>`;
+    <div class="summary-card"><div class="summary-label">${lang==='ID'?'Total Keseluruhan':'All Time'}</div><div class="summary-value sm">${fmt(allRev)}</div></div>`;
   const subtitles={daily:lang==='ID'?'8 jam terakhir':'Last 8 hours',weekly:lang==='ID'?'7 hari terakhir':'Last 7 days',monthly:lang==='ID'?'Bulan ini':'This month',yearly:lang==='ID'?'Tahun ini':'This year'};
   if($('chart-title')) $('chart-title').textContent=lang==='ID'?'Analitik Penjualan':'Sales Analytics';
   if($('chart-sub')) $('chart-sub').textContent=subtitles[reportFilter];
@@ -1515,9 +1525,19 @@ function renderReport() {
     hist.innerHTML=`<div class="empty-state"><div class="empty-icon"><i data-lucide="bar-chart-2"></i></div><h3>${lang==='ID'?'Belum Ada Transaksi':'No Transactions'}</h3><p>${t('empty_laporan')}</p></div>`;
   } else {
     hist.innerHTML=filtered.map(s=>{
-      const mc=(s.method||'').includes('QRIS')?'badge-qris':'badge-cash';
+      const mc=(s.method||'').includes('QRIS')?'badge-qris':(s.method||'').toLowerCase().includes('transfer')||( s.method||'').toLowerCase().includes('debit')?'badge-qris':'badge-cash';
       const ml=s.method||(lang==='ID'?'Tunai':'Cash');
-      return `<div class="sale-card anim-in"><div class="sale-card-header"><div><div class="sale-total">${fmt(s.total)}</div><div class="sale-date">${s.date}</div></div><span class="sale-method-badge ${mc}">${ml}</span></div><div class="sale-desc">${escHtml(s.desc)}</div></div>`;
+      // Format date with full datetime
+      let displayDate = s.date;
+      try {
+        const d = parseSaleDate(s.date);
+        if (d) {
+          displayDate = d.toLocaleDateString(lang==='ID'?'id-ID':'en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'})
+            + ', ' + d.toLocaleTimeString(lang==='ID'?'id-ID':'en-US',{hour:'2-digit',minute:'2-digit',hour12:false});
+        }
+      } catch(e) { displayDate = s.date; }
+      const cashierLabel = s.cashier ? `<div style="font-size:11px;color:var(--text3);margin-top:3px;display:flex;align-items:center;gap:4px;"><svg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2'/><circle cx='12' cy='7' r='4'/></svg>${escHtml(s.cashier)}</div>` : '';
+      return `<div class="sale-card anim-in"><div class="sale-card-header"><div><div class="sale-total">${fmt(s.total)}</div><div class="sale-date">${displayDate}</div>${cashierLabel}</div><span class="sale-method-badge ${mc}">${ml}</span></div><div class="sale-desc">${escHtml(s.desc)}</div></div>`;
     }).join('');
   }
 }
@@ -1526,6 +1546,7 @@ function renderReport() {
 function renderSettings() {
   if($('disp-biz')) $('disp-biz').textContent = bizName;
   if($('disp-biz2')) $('disp-biz2').textContent = bizName;
+  if($('disp-cashier')) $('disp-cashier').textContent = cashierName || (lang==='ID'?'Belum diatur':'Not set');
   const qrisImg = localStorage.getItem('pos_qris');
   if($('disp-qris-status')) $('disp-qris-status').textContent = qrisImg?(lang==='ID'?'Terpasang ✓':'Configured ✓'):(lang==='ID'?'Belum dipasang':'Not configured');
   if($('disp-tax')) $('disp-tax').textContent = taxRate>0?`PPN ${taxRate}%`:(lang==='ID'?'Tidak aktif':'Inactive');
@@ -1663,6 +1684,14 @@ function openModal(type) {
     setTimeout(() => $('inp-biz')?.focus(), 150);
   }
 
+  else if (type === 'cashierName') {
+    title.textContent = t('namakasir');
+    body.innerHTML = `
+      <div class="field-wrap"><div class="field-label">${lang==='ID'?'Nama Kasir / Cashier Name':'Cashier Name'}</div><input type="text" id="inp-cashier" class="fld" value="${escAttr(cashierName)}" maxlength="40" placeholder="${lang==='ID'?'Masukkan nama kasir':'Enter cashier name'}"></div>
+      <button class="btn btn-primary" onclick="saveCashierName()" style="margin-top:4px;">${lang==='ID'?'Simpan':'Save'}</button>`;
+    setTimeout(() => $('inp-cashier')?.focus(), 150);
+  }
+
   else if (type === 'qris') {
     title.textContent = t('set_qris');
     const cur = localStorage.getItem('pos_qris');
@@ -1796,51 +1825,146 @@ function openModal(type) {
     title.textContent = t('lbl_about');
     body.innerHTML = `
       <div style="text-align:center;padding:20px 0 16px;">
-        <div style="font-size:32px;font-weight:800;letter-spacing:-1px;color:var(--blue);">Caseer</div>
+        <div style="font-size:32px;font-weight:800;letter-spacing:-1px;color:var(--blue);font-family:'Poppins',sans-serif;">Caseer</div>
         <div style="font-size:14px;color:var(--text3);margin-top:4px;">Version 2.1.0</div>
         ${isPremium()?`<div style="margin-top:8px;"><span class="premium-badge">⭐ Premium</span></div>`:''}
       </div>
-      <div class="info-block"><p>${lang==='ID'?'Caseer adalah aplikasi kasir modern untuk usaha kecil dan menengah. Mudah digunakan, dan bekerja sepenuhnya offline.':'Caseer is a modern point-of-sale app for small and medium businesses. Easy to use, and works completely offline.'}</p></div>
-      <div class="card">
-        <div class="list-row"><div class="left"><div class="row-label">Version</div></div><div class="right" style="color:var(--text2);font-weight:600;">2.1.0</div></div>
+      <div class="info-block">
+        <h4>${lang==='ID'?'Tentang Aplikasi':'About the App'}</h4>
+        <p>${lang==='ID'
+          ?'Caseer adalah solusi kasir digital yang dirancang khusus untuk usaha kecil dan menengah (UKM). Dibangun dengan teknologi web modern, Caseer bekerja sepenuhnya secara offline — tidak memerlukan koneksi internet untuk operasional harian. Semua data transaksi, stok produk, dan laporan tersimpan dengan aman di perangkat Anda.'
+          :'Caseer is a digital point-of-sale solution purpose-built for small and medium-sized businesses. Built on modern web technology, Caseer operates entirely offline — no internet connection required for daily operations. All transaction data, product inventory, and reports are stored securely on your device.'
+        }</p>
+      </div>
+      <div class="card" style="margin-bottom:12px;">
+        <div class="list-row"><div class="left"><div class="row-label">${lang==='ID'?'Versi Aplikasi':'App Version'}</div></div><div class="right" style="color:var(--text2);font-weight:600;">2.1.0</div></div>
         <div class="divider"></div>
         <div class="list-row"><div class="left"><div class="row-label">Developer</div></div><div class="right" style="color:var(--text2);">Caseer Team</div></div>
         <div class="divider"></div>
         <div class="list-row"><div class="left"><div class="row-label">Email</div></div><div class="right" style="color:var(--blue);font-size:14px;">termireum@gmail.com</div></div>
         <div class="divider"></div>
-        <div class="list-row"><div class="left"><div class="row-label">${lang==='ID'?'Penyimpanan':'Storage'}</div></div><div class="right" style="color:var(--text2);">Local / Offline</div></div>
-      </div>`;
+        <div class="list-row"><div class="left"><div class="row-label">${lang==='ID'?'Penyimpanan Data':'Data Storage'}</div></div><div class="right" style="color:var(--text2);">Local / Offline</div></div>
+        <div class="divider"></div>
+        <div class="list-row"><div class="left"><div class="row-label">${lang==='ID'?'Platform':'Platform'}</div></div><div class="right" style="color:var(--text2);">Web App (PWA)</div></div>
+        <div class="divider"></div>
+        <div class="list-row"><div class="left"><div class="row-label">${lang==='ID'?'Lisensi':'License'}</div></div><div class="right"><span class="${isPremium()?'premium-badge':'free-badge'}">${isPremium()?'⭐ Premium':'Free'}</span></div></div>
+      </div>
+      <div style="background:var(--card2);border-radius:var(--r-md);padding:14px;margin-bottom:12px;">
+        <p style="margin:0;font-size:13px;color:var(--text3);line-height:1.7;">${lang==='ID'
+          ?'✦ Manajemen stok produk  ✦ Laporan transaksi real-time  ✦ Multi metode pembayaran  ✦ Backup & ekspor data  ✦ Dark mode  ✦ Multi bahasa'
+          :'✦ Product inventory management  ✦ Real-time transaction reports  ✦ Multi payment methods  ✦ Data backup & export  ✦ Dark mode  ✦ Multi-language'
+        }</p>
+      </div>
+      <button class="btn btn-ghost" onclick="closeModal()">${lang==='ID'?'Tutup':'Close'}</button>`;
   }
 
   else if (type === 'disclaimer') {
     title.textContent = t('lbl_disclaimer');
+    const sections_id = [
+      ['Keterbatasan Tanggung Jawab','Caseer disediakan "sebagaimana adanya" (as-is) tanpa jaminan dalam bentuk apapun, baik tersurat maupun tersirat. Pengembang tidak memberikan jaminan bahwa aplikasi akan bebas dari kesalahan, gangguan, atau kerusakan teknis.'],
+      ['Risiko Penggunaan','Pengguna sepenuhnya menanggung risiko penggunaan aplikasi ini. Pengembang tidak bertanggung jawab atas kehilangan data, kerusakan sistem, kerugian finansial, atau kerugian tidak langsung lainnya yang timbul dari penggunaan Caseer.'],
+      ['Akurasi Data','Caseer adalah alat bantu pencatatan. Pengguna bertanggung jawab untuk memverifikasi keakuratan data yang dimasukkan. Pengembang tidak bertanggung jawab atas kesalahan input yang dilakukan pengguna.'],
+      ['Backup Data','Sangat disarankan untuk melakukan backup data secara berkala menggunakan fitur Ekspor yang tersedia. Kehilangan data akibat kerusakan perangkat, penghapusan cache browser, atau pembaruan sistem tidak menjadi tanggung jawab pengembang.'],
+      ['Pembaruan Aplikasi','Pengembang berhak mengubah, memperbarui, atau menghentikan layanan sewaktu-waktu tanpa pemberitahuan sebelumnya. Penggunaan berlanjut setelah pembaruan dianggap sebagai persetujuan terhadap ketentuan yang berlaku.'],
+    ];
+    const sections_en = [
+      ['Limitation of Liability','Caseer is provided "as is" without warranty of any kind, either express or implied. The developer does not guarantee that the application will be error-free, uninterrupted, or free of technical defects.'],
+      ['Use at Your Own Risk','Users assume all risk associated with the use of this application. The developer is not liable for data loss, system damage, financial loss, or any indirect damages arising from the use of Caseer.'],
+      ['Data Accuracy','Caseer is a recording tool. Users are responsible for verifying the accuracy of data entered. The developer is not responsible for input errors made by users.'],
+      ['Data Backup','It is strongly recommended to perform regular data backups using the available Export feature. Data loss due to device failure, browser cache clearing, or system updates is not the developer\'s responsibility.'],
+      ['App Updates','The developer reserves the right to modify, update, or discontinue the service at any time without prior notice. Continued use after updates constitutes acceptance of the applicable terms.'],
+    ];
+    const sections = lang==='ID' ? sections_id : sections_en;
     body.innerHTML = `
-      <div class="card" style="padding:16px;border-radius:var(--r-xl);">
-        <p style="font-size:15px;font-weight:700;margin:0 0 10px;">${lang==='ID'?'Penafian':'Disclaimer'}</p>
-        <p style="font-size:14px;color:var(--text2);line-height:1.7;margin:0 0 12px;">${lang==='ID'?'Caseer disediakan "sebagaimana adanya" tanpa jaminan apapun.':'Caseer is provided "as is" without any warranties.'}</p>
-        <p style="font-size:14px;color:var(--text2);line-height:1.7;margin:0;">${lang==='ID'?'Pengembang tidak bertanggung jawab atas kerugian data yang mungkin timbul.':'The developer is not liable for data loss that may arise.'}</p>
+      <div class="info-block" style="background:rgba(255,149,0,0.1);border:0.5px solid rgba(255,149,0,0.3);">
+        <h4 style="color:var(--orange);">⚠️ ${lang==='ID'?'Harap Dibaca':'Please Read'}</h4>
+        <p>${lang==='ID'?'Dengan menggunakan Caseer, Anda menyatakan telah membaca, memahami, dan menyetujui disclaimer berikut ini.':'By using Caseer, you acknowledge that you have read, understood, and agreed to the following disclaimer.'}</p>
       </div>
-      <button class="btn btn-ghost" onclick="closeModal()" style="margin-top:10px;">${lang==='ID'?'Tutup':'Close'}</button>`;
+      <div class="card" style="margin-bottom:12px;">
+        ${sections.map(([h,p],i)=>`
+          <div style="padding:14px 16px;${i>0?'border-top:0.5px solid var(--sep);':''}">
+            <p style="font-size:13px;font-weight:700;margin:0 0 5px;color:var(--text);">${h}</p>
+            <p style="font-size:13px;color:var(--text2);line-height:1.7;margin:0;">${p}</p>
+          </div>`).join('')}
+      </div>
+      <p style="font-size:11px;color:var(--text3);text-align:center;margin:0 0 10px;">${lang==='ID'?'Berlaku sejak versi 2.1.0 · Caseer Team':'Effective from version 2.1.0 · Caseer Team'}</p>
+      <button class="btn btn-ghost" onclick="closeModal()">${lang==='ID'?'Tutup':'Close'}</button>`;
   }
 
   else if (type === 'privacy') {
     title.textContent = t('lbl_privacy');
+    const sections_id = [
+      ['1. Pengumpulan Data','Caseer tidak mengumpulkan, merekam, atau mentransmisikan data pribadi pengguna kepada pihak ketiga manapun. Aplikasi ini beroperasi sepenuhnya secara lokal di perangkat Anda.'],
+      ['2. Penyimpanan Data Lokal','Seluruh data — termasuk data produk, transaksi, laporan, dan pengaturan — disimpan eksklusif di penyimpanan lokal perangkat Anda (localStorage browser). Data tidak pernah meninggalkan perangkat Anda tanpa tindakan eksplisit dari Anda (misalnya ekspor manual).'],
+      ['3. Tidak Ada Pelacakan','Caseer tidak menggunakan cookie pelacakan, piksel analitik, atau layanan pihak ketiga seperti Google Analytics, Firebase, atau layanan serupa. Tidak ada aktivitas penggunaan yang dipantau atau dilaporkan.'],
+      ['4. Keamanan Data','Keamanan data Anda bergantung pada keamanan perangkat yang Anda gunakan. Kami sangat menyarankan penggunaan kunci layar perangkat dan melakukan ekspor/backup data secara berkala untuk mencegah kehilangan data yang tidak diinginkan.'],
+      ['5. Hak Pengguna','Anda memiliki kendali penuh atas data Anda. Anda dapat menghapus semua data kapan saja melalui menu Setelan → Hapus Semua Laporan, atau dengan menghapus data aplikasi dari browser.'],
+      ['6. Perubahan Kebijakan','Kebijakan privasi ini dapat diperbarui sewaktu-waktu. Versi terbaru selalu tersedia di dalam aplikasi. Penggunaan berlanjut setelah perubahan dianggap sebagai persetujuan Anda.'],
+      ['7. Hubungi Kami','Jika Anda memiliki pertanyaan terkait privasi, silakan hubungi kami di termireum@gmail.com.'],
+    ];
+    const sections_en = [
+      ['1. Data Collection','Caseer does not collect, record, or transmit any personal user data to any third parties. The application operates entirely locally on your device.'],
+      ['2. Local Data Storage','All data — including product data, transactions, reports, and settings — is stored exclusively in your device\'s local storage (browser localStorage). Data never leaves your device without an explicit action from you (e.g. manual export).'],
+      ['3. No Tracking','Caseer does not use tracking cookies, analytics pixels, or third-party services such as Google Analytics, Firebase, or similar services. No usage activity is monitored or reported.'],
+      ['4. Data Security','The security of your data depends on the security of the device you use. We strongly recommend using a screen lock and performing regular data exports/backups to prevent unintended data loss.'],
+      ['5. User Rights','You have full control over your data. You can delete all data at any time via Settings → Delete All Reports, or by clearing the application data from your browser.'],
+      ['6. Policy Changes','This privacy policy may be updated at any time. The latest version is always available within the application. Continued use after changes constitutes your acceptance.'],
+      ['7. Contact Us','If you have any privacy-related questions, please contact us at termireum@gmail.com.'],
+    ];
+    const sections = lang==='ID' ? sections_id : sections_en;
     body.innerHTML = `
-      <div class="card" style="padding:16px;border-radius:var(--r-xl);">
-        <p style="font-size:15px;font-weight:700;margin:0 0 10px;">${lang==='ID'?'Kebijakan Privasi':'Privacy Policy'}</p>
-        ${[[lang==='ID'?'Penyimpanan Data Lokal':'Local Data Storage',lang==='ID'?'Semua data disimpan lokal di perangkat Anda. Tidak ada data yang dikirim ke server.':'All data is stored locally on your device. No data is sent to any server.'],[lang==='ID'?'Tidak Ada Pengumpulan Data':'No Data Collection',lang==='ID'?'Kami tidak mengumpulkan informasi pribadi atau analitik.':'We do not collect personal information or analytics.'],[lang==='ID'?'Keamanan Data':'Data Security',lang==='ID'?'Keamanan data bergantung pada keamanan perangkat Anda. Lakukan backup rutin.':'Data security depends on your device. Perform regular backups.']].map(([h,p])=>`<div style="margin-bottom:14px;"><p style="font-size:14px;font-weight:700;margin:0 0 4px;color:var(--text);">${h}</p><p style="font-size:13px;color:var(--text2);line-height:1.7;margin:0;">${p}</p></div>`).join('<div class="divider" style="margin:12px 0;"></div>')}
+      <div class="info-block">
+        <h4>${lang==='ID'?'🔒 Privasi Anda Terlindungi':'🔒 Your Privacy is Protected'}</h4>
+        <p>${lang==='ID'?'Caseer berkomitmen penuh untuk melindungi privasi pengguna. Tidak ada data yang keluar dari perangkat Anda.':'Caseer is fully committed to protecting user privacy. No data ever leaves your device.'}</p>
       </div>
-      <button class="btn btn-ghost" onclick="closeModal()" style="margin-top:10px;">${lang==='ID'?'Tutup':'Close'}</button>`;
+      <div class="card" style="margin-bottom:12px;">
+        ${sections.map(([h,p],i)=>`
+          <div style="padding:14px 16px;${i>0?'border-top:0.5px solid var(--sep);':''}">
+            <p style="font-size:13px;font-weight:700;margin:0 0 5px;color:var(--text);">${h}</p>
+            <p style="font-size:13px;color:var(--text2);line-height:1.7;margin:0;">${p}</p>
+          </div>`).join('')}
+      </div>
+      <p style="font-size:11px;color:var(--text3);text-align:center;margin:0 0 10px;">${lang==='ID'?'Terakhir diperbarui: Januari 2025 · Caseer v2.1.0':'Last updated: January 2025 · Caseer v2.1.0'}</p>
+      <button class="btn btn-ghost" onclick="closeModal()">${lang==='ID'?'Tutup':'Close'}</button>`;
   }
 
   else if (type === 'terms') {
     title.textContent = t('lbl_terms');
+    const sections_id = [
+      ['1. Penerimaan Syarat','Dengan mengunduh, mengakses, atau menggunakan aplikasi Caseer, Anda menyatakan telah membaca, memahami, dan menyetujui Syarat Penggunaan ini secara menyeluruh. Jika Anda tidak menyetujui syarat ini, mohon hentikan penggunaan aplikasi.'],
+      ['2. Izin Penggunaan','Caseer memberikan Anda lisensi terbatas, non-eksklusif, dan tidak dapat dipindahtangankan untuk menggunakan aplikasi ini semata-mata untuk keperluan operasional bisnis yang sah. Pengguna Free dibatasi hingga 30 produk; pengguna Premium mendapatkan akses tak terbatas.'],
+      ['3. Larangan Penggunaan','Pengguna dilarang: (a) memodifikasi, mendistribusikan, atau menjual kembali aplikasi; (b) menggunakan aplikasi untuk kegiatan ilegal; (c) mencoba membobol sistem keamanan atau lisensi; (d) menghapus atribusi hak cipta dari aplikasi.'],
+      ['4. Kepemilikan Intelektual','Seluruh hak kekayaan intelektual atas Caseer — termasuk namun tidak terbatas pada kode sumber, desain, logo, dan merek dagang — adalah milik eksklusif Caseer Team. Tidak ada hak yang dialihkan kepada pengguna selain lisensi penggunaan terbatas yang disebutkan.'],
+      ['5. Tanggung Jawab Pengguna','Pengguna bertanggung jawab penuh atas: (a) keakuratan data yang dimasukkan ke dalam aplikasi; (b) keamanan perangkat yang digunakan; (c) kelancaran operasional bisnis berdasarkan data dalam aplikasi; (d) kepatuhan terhadap regulasi perpajakan dan bisnis yang berlaku.'],
+      ['6. Lisensi Premium','Lisensi Premium bersifat sekali bayar dan berlaku seumur hidup untuk satu perangkat. Lisensi tidak dapat dipindahtangankan, dijual, atau dibagikan kepada pihak lain. Pelanggaran ketentuan lisensi akan mengakibatkan pencabutan akses Premium tanpa pengembalian dana.'],
+      ['7. Perubahan Layanan','Caseer Team berhak mengubah fitur, harga, atau menghentikan layanan kapan saja. Kami akan berupaya memberikan pemberitahuan yang wajar, namun tidak diwajibkan secara hukum untuk melakukannya.'],
+      ['8. Hukum yang Berlaku','Syarat Penggunaan ini diatur oleh hukum Republik Indonesia. Setiap sengketa yang timbul akan diselesaikan melalui musyawarah mufakat, dan jika tidak tercapai, melalui pengadilan yang berwenang di Indonesia.'],
+    ];
+    const sections_en = [
+      ['1. Acceptance of Terms','By downloading, accessing, or using Caseer, you acknowledge that you have read, understood, and agreed to these Terms of Use in their entirety. If you do not agree to these terms, please discontinue use of the application.'],
+      ['2. License Grant','Caseer grants you a limited, non-exclusive, non-transferable license to use this application solely for lawful business operational purposes. Free users are limited to 30 products; Premium users receive unlimited access.'],
+      ['3. Prohibited Uses','Users are prohibited from: (a) modifying, distributing, or reselling the application; (b) using the application for illegal activities; (c) attempting to circumvent security or licensing systems; (d) removing copyright attribution from the application.'],
+      ['4. Intellectual Property','All intellectual property rights in Caseer — including but not limited to source code, design, logos, and trademarks — are the exclusive property of Caseer Team. No rights are transferred to users other than the limited usage license stated herein.'],
+      ['5. User Responsibility','Users are fully responsible for: (a) the accuracy of data entered into the application; (b) the security of the device used; (c) business operations based on data in the application; (d) compliance with applicable tax and business regulations.'],
+      ['6. Premium License','The Premium license is a one-time payment and is valid for the lifetime of the application on a single device. The license is non-transferable, may not be sold, or shared with third parties. Violation of license terms will result in revocation of Premium access without refund.'],
+      ['7. Service Changes','Caseer Team reserves the right to modify features, pricing, or discontinue services at any time. We will endeavor to provide reasonable notice, but are not legally obligated to do so.'],
+      ['8. Governing Law','These Terms of Use are governed by the laws of the Republic of Indonesia. Any disputes arising shall be resolved through amicable discussion, and if unresolved, through the competent courts in Indonesia.'],
+    ];
+    const sections = lang==='ID' ? sections_id : sections_en;
     body.innerHTML = `
-      <div class="card" style="padding:16px;border-radius:var(--r-xl);">
-        <p style="font-size:15px;font-weight:700;margin:0 0 10px;">${lang==='ID'?'Syarat & Ketentuan':'Terms of Use'}</p>
-        ${[[lang==='ID'?'1. Penerimaan':'1. Acceptance',lang==='ID'?'Dengan menggunakan Caseer, Anda menyetujui syarat ini.':'By using Caseer, you agree to these terms.'],[lang==='ID'?'2. Penggunaan':'2. Use',lang==='ID'?'Caseer dirancang untuk penggunaan bisnis yang sah.':'Caseer is designed for lawful business use.'],[lang==='ID'?'3. Data':'3. Data',lang==='ID'?'Pengguna bertanggung jawab atas data yang dimasukkan.':'Users are responsible for entered data.']].map(([h,p])=>`<div style="margin-bottom:14px;"><p style="font-size:14px;font-weight:700;margin:0 0 4px;">${h}</p><p style="font-size:13px;color:var(--text2);line-height:1.7;margin:0;">${p}</p></div>`).join('<div class="divider" style="margin:12px 0;"></div>')}
+      <div class="info-block">
+        <h4>${lang==='ID'?'📄 Syarat & Ketentuan Penggunaan':'📄 Terms of Use'}</h4>
+        <p>${lang==='ID'?'Dokumen ini merupakan perjanjian yang mengikat antara Anda sebagai pengguna dan Caseer Team sebagai pengembang.':'This document constitutes a binding agreement between you as a user and Caseer Team as the developer.'}</p>
       </div>
-      <button class="btn btn-ghost" onclick="closeModal()" style="margin-top:10px;">${lang==='ID'?'Tutup':'Close'}</button>`;
+      <div class="card" style="margin-bottom:12px;">
+        ${sections.map(([h,p],i)=>`
+          <div style="padding:14px 16px;${i>0?'border-top:0.5px solid var(--sep);':''}">
+            <p style="font-size:13px;font-weight:700;margin:0 0 5px;color:var(--text);">${h}</p>
+            <p style="font-size:13px;color:var(--text2);line-height:1.7;margin:0;">${p}</p>
+          </div>`).join('')}
+      </div>
+      <p style="font-size:11px;color:var(--text3);text-align:center;margin:0 0 10px;">${lang==='ID'?'Berlaku sejak versi 2.1.0 · © 2025 Caseer Team. Hak cipta dilindungi.':'Effective from version 2.1.0 · © 2025 Caseer Team. All rights reserved.'}</p>
+      <button class="btn btn-ghost" onclick="closeModal()">${lang==='ID'?'Tutup':'Close'}</button>`;
   }
 
   else if (type === 'confirm') { /* handled by openConfirm */ }
@@ -1936,7 +2060,8 @@ function processCheckout() {
     date: new Date().toLocaleString('id-ID'),
     total, sub, disc, desc,
     method: methodLabels[payMethod] || payMethod,
-    items: cart.map(i => ({name:i.name,qty:i.qty,price:i.price}))
+    items: cart.map(i => ({name:i.name,qty:i.qty,price:i.price})),
+    cashier: cashierName || (lang==='ID'?'Kasir':'Cashier')
   });
   save();
   cart = [];
@@ -1992,6 +2117,12 @@ function saveBizName() {
   localStorage.setItem('pos_biz', bizName);
   closeModal(); renderAll();
   toast(lang==='ID'?'Nama usaha disimpan':'Business name saved');
+}
+function saveCashierName() {
+  cashierName = ($('inp-cashier')?.value || '').trim();
+  localStorage.setItem('pos_cashier', cashierName);
+  closeModal(); renderAll();
+  toast(lang==='ID'?'Nama kasir disimpan':'Cashier name saved');
 }
 function setLang(l) { lang=l; localStorage.setItem('pos_lang',l); closeModal(); renderAll(); }
 function saveTax() { taxRate=parseFloat($('inp-tax')?.value)||0; localStorage.setItem('pos_tax',taxRate); closeModal(); renderAll(); toast(lang==='ID'?'Pengaturan pajak disimpan':'Tax settings saved'); }
