@@ -1,1 +1,9 @@
-<link rel="manifest" href="manifest.json">
+{
+  "name": "Caseer",
+  "short_name": "Caseer",
+  "display": "standalone",
+  "start_url": "/caseer/",
+  "background_color": "#ffffff",
+  "theme_color": "#007AFF",
+  "icons": [...]
+}
