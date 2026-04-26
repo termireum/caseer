@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caseer License Keygen</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0f;
+    --card: #13131a;
+    --card2: #1c1c26;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.14);
+    --gold: #f5c842;
+    --gold2: #e8a800;
+    --gold-glow: rgba(245,200,66,0.18);
+    --green: #22c55e;
+    --red: #ef4444;
+    --text: #f0f0f5;
+    --text2: #9898b0;
+    --text3: #5a5a72;
+    --r: 16px;
+  }
+
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px 60px;
+  }
+
+  /* Background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(245,200,66,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(245,200,66,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 560px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 36px;
+    animation: fadeDown 0.6s cubic-bezier(0.16,1,0.3,1) both;
+  }
+  .logo {
+    font-size: 38px;
+    font-weight: 800;
+    letter-spacing: -1.5px;
+    background: linear-gradient(135deg, var(--gold), #fff9e0, var(--gold2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 6px;
+  }
+  .logo-sub {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--text3);
+  }
+  .warning-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 16px;
+    background: rgba(239,68,68,0.12);
+    border: 1px solid rgba(239,68,68,0.25);
+    border-radius: 100px;
+    padding: 5px 14px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #f87171;
+    letter-spacing: 0.3px;
+  }
+
+  /* Card */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    padding: 28px;
+    margin-bottom: 16px;
+    animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) both;
+  }
+  .card:nth-child(2) { animation-delay: 0.05s; }
+  .card:nth-child(3) { animation-delay: 0.1s; }
+
+  .card-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 20px;
+  }
+
+  /* Form fields */
+  .field { margin-bottom: 18px; }
+  .field:last-child { margin-bottom: 0; }
+  .label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text2);
+    margin-bottom: 8px;
+    letter-spacing: 0.3px;
+  }
+  .input {
+    width: 100%;
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .input:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px var(--gold-glow);
+  }
+  select.input { cursor: pointer; }
+  option { background: #1c1c26; }
+
+  /* Row inputs */
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  /* Secret field */
+  .secret-wrap { position: relative; }
+  .secret-wrap .input { font-family: 'JetBrains Mono', monospace; font-size: 12px; padding-right: 44px; }
+  .secret-toggle {
+    position: absolute;
+    right: 12px; top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text3);
+    font-size: 16px;
+    padding: 4px;
+    transition: color 0.2s;
+  }
+  .secret-toggle:hover { color: var(--gold); }
+
+  /* Button */
+  .btn-generate {
+    width: 100%;
+    background: linear-gradient(135deg, var(--gold), var(--gold2));
+    border: none;
+    border-radius: 12px;
+    padding: 15px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: #0a0a0f;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.15s;
+    margin-top: 8px;
+    letter-spacing: 0.2px;
+  }
+  .btn-generate:hover { opacity: 0.9; transform: translateY(-1px); }
+  .btn-generate:active { transform: translateY(0); opacity: 1; }
+
+  /* Result */
+  .result-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    padding: 24px 28px;
+    margin-bottom: 16px;
+    display: none;
+    animation: fadeUp 0.4s cubic-bezier(0.16,1,0.3,1) both;
+  }
+  .result-card.show { display: block; }
+  .result-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .result-label::before {
+    content: '';
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 8px var(--green);
+  }
+  .key-display {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    color: var(--gold);
+    text-align: center;
+    padding: 18px;
+    background: var(--card2);
+    border-radius: 10px;
+    border: 1px dashed rgba(245,200,66,0.3);
+    margin-bottom: 14px;
+    word-break: break-all;
+  }
+  .key-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .key-meta-item {
+    background: var(--card2);
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+  .key-meta-label { font-size: 10px; color: var(--text3); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; }
+  .key-meta-value { font-size: 13px; color: var(--text2); font-weight: 500; }
+
+  /* Copy button */
+  .btn-copy {
+    width: 100%;
+    background: transparent;
+    border: 1px solid var(--border2);
+    border-radius: 10px;
+    padding: 11px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text2);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .btn-copy:hover { border-color: var(--gold); color: var(--gold); background: var(--gold-glow); }
+  .btn-copy.copied { border-color: var(--green); color: var(--green); background: rgba(34,197,94,0.08); }
+
+  /* History */
+  .history-list { display: flex; flex-direction: column; gap: 8px; }
+  .history-item {
+    background: var(--card2);
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .history-key {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--gold);
+    letter-spacing: 1px;
+  }
+  .history-info { font-size: 11px; color: var(--text3); margin-top: 2px; }
+  .history-copy {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text3);
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .history-copy:hover { border-color: var(--gold); color: var(--gold); }
+  .empty-history { text-align: center; padding: 24px; color: var(--text3); font-size: 13px; }
+
+  .btn-clear {
+    background: none;
+    border: none;
+    color: var(--text3);
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    float: right;
+    padding: 0;
+    transition: color 0.2s;
+  }
+  .btn-clear:hover { color: var(--red); }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 30px; left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--card2);
+    border: 1px solid var(--border2);
+    border-radius: 100px;
+    padding: 10px 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    z-index: 100;
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* Animations */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Divider */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 20px 0;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="logo">Caseer</div>
+    <div class="logo-sub">License Key Generator</div>
+    <div class="warning-badge">🔒 Simpan file ini secara lokal — jangan dipublikasikan</div>
+  </div>
+
+  <!-- Config Card -->
+  <div class="card">
+    <div class="card-title">⚙️ Konfigurasi Secret</div>
+    <div class="field">
+      <label class="label">Secret Key (harus sama persis dengan yang ada di index.html)</label>
+      <div class="secret-wrap">
+        <input type="password" class="input" id="secret-input"
+          value="CSR-2f8a1e9d-7b3c-4a6f-82e1-d9f0c3b5a741"
+          placeholder="Masukkan secret key...">
+        <button class="secret-toggle" onclick="toggleSecret()" title="Tampilkan/sembunyikan">👁</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Generate Card -->
+  <div class="card">
+    <div class="card-title">🔑 Generate License Key</div>
+
+    <div class="row">
+      <div class="field">
+        <label class="label">Tahun</label>
+        <select class="input" id="inp-year"></select>
+      </div>
+      <div class="field">
+        <label class="label">Tipe Lisensi</label>
+        <select class="input" id="inp-type">
+          <option value="CSRP">Premium (CSRP)</option>
+          <option value="CSRE">Enterprise (CSRE)</option>
+          <option value="CSRT">Trial (CSRT)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="label">Nama Pembeli (opsional, untuk catatan)</label>
+      <input type="text" class="input" id="inp-name" placeholder="Contoh: Budi Santoso / Toko Maju">
+    </div>
+
+    <div class="field">
+      <label class="label">Suffix Acak (4 karakter A-Z, kosongkan untuk auto-generate)</label>
+      <input type="text" class="input" id="inp-suffix" placeholder="Contoh: XKQM" maxlength="4"
+        style="text-transform:uppercase;font-family:'JetBrains Mono',monospace;letter-spacing:2px;"
+        oninput="this.value=this.value.toUpperCase().replace(/[^A-Z]/g,'')">
+    </div>
+
+    <button class="btn-generate" onclick="generateKey()">⚡ Generate License Key</button>
+  </div>
+
+  <!-- Result -->
+  <div class="result-card" id="result-card">
+    <div class="result-label">License Key Berhasil Digenerate</div>
+    <div class="key-display" id="result-key">—</div>
+    <div class="key-meta">
+      <div class="key-meta-item">
+        <div class="key-meta-label">Pembeli</div>
+        <div class="key-meta-value" id="result-name">—</div>
+      </div>
+      <div class="key-meta-item">
+        <div class="key-meta-label">Tanggal Generate</div>
+        <div class="key-meta-value" id="result-date">—</div>
+      </div>
+      <div class="key-meta-item">
+        <div class="key-meta-label">Tipe</div>
+        <div class="key-meta-value" id="result-type">—</div>
+      </div>
+      <div class="key-meta-item">
+        <div class="key-meta-label">Tahun</div>
+        <div class="key-meta-value" id="result-year">—</div>
+      </div>
+    </div>
+    <button class="btn-copy" id="copy-btn" onclick="copyKey()">
+      <span>📋</span> Salin Key
+    </button>
+  </div>
+
+  <!-- History Card -->
+  <div class="card" style="animation-delay:0.15s;">
+    <div class="card-title">
+      📜 Riwayat Key
+      <button class="btn-clear" onclick="clearHistory()">Hapus Semua</button>
+    </div>
+    <div class="history-list" id="history-list">
+      <div class="empty-history">Belum ada key yang digenerate.</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// =============================================
+// SECRET — harus identik dengan di index.html
+// =============================================
+function getSecret() {
+  return document.getElementById('secret-input').value.trim();
+}
+
+// HMAC-SHA256 menggunakan Web Crypto API
+async function hmacSha256(secret, message) {
+  const enc = new TextEncoder();
+  const keyMaterial = await crypto.subtle.importKey(
+    'raw',
+    enc.encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  );
+  const sig = await crypto.subtle.sign('HMAC', keyMaterial, enc.encode(message));
+  return Array.from(new Uint8Array(sig))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
+}
+
+// Generate suffix acak A-Z
+function randomSuffix(len = 4) {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ'; // tanpa I dan O untuk menghindari konfusi
+  let result = '';
+  for (let i = 0; i < len; i++) {
+    result += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return result;
+}
+
+// =============================================
+// GENERATE KEY
+// Algoritma harus sinkron dengan validateKey() di index.html
+// Format: TYPE-YEAR-SUFFIX-CCCC
+// CCCC = String(parseInt(hash.substring(0,4), 16) % 10000).padStart(4,'0')
+// hash  = HMAC-SHA256(secret, 'CASEER_PREMIUM_' + fullKey)
+// =============================================
+async function generateKey() {
+  const secret = getSecret();
+  if (!secret) { showToast('⚠️ Secret key tidak boleh kosong'); return; }
+
+  const year   = document.getElementById('inp-year').value;
+  const type   = document.getElementById('inp-type').value;
+  const name   = document.getElementById('inp-name').value.trim() || 'Tanpa nama';
+  let suffix   = document.getElementById('inp-suffix').value.trim().toUpperCase();
+  if (!suffix || suffix.length !== 4) suffix = randomSuffix(4);
+
+  // keyBody = TYPE-YEAR-SUFFIX
+  const keyBody = `${type}-${year}-${suffix}`;
+
+  // Checksum = HMAC(secret, 'CASEER_SEED_' + keyBody) → 4 digit desimal
+  const preHash = await hmacSha256(secret, 'CASEER_SEED_' + keyBody);
+  const checksum = String(parseInt(preHash.substring(0, 4), 16) % 10000).padStart(4, '0');
+
+  const fullKey = `${keyBody}-${checksum}`;
+
+  // Tampilkan result
+  document.getElementById('result-key').textContent = fullKey;
+  document.getElementById('result-name').textContent = name;
+  document.getElementById('result-date').textContent = new Date().toLocaleDateString('id-ID', {day:'numeric',month:'long',year:'numeric'});
+  document.getElementById('result-type').textContent = type === 'CSRP' ? 'Premium' : type === 'CSRE' ? 'Enterprise' : 'Trial';
+  document.getElementById('result-year').textContent = year;
+
+  const resultCard = document.getElementById('result-card');
+  resultCard.classList.add('show');
+  resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+  // Reset copy button
+  const copyBtn = document.getElementById('copy-btn');
+  copyBtn.classList.remove('copied');
+  copyBtn.innerHTML = '<span>📋</span> Salin Key';
+
+  // Simpan ke history
+  saveHistory({ key: fullKey, name, type, year, date: new Date().toISOString() });
+  renderHistory();
+}
+
+// Copy to clipboard
+async function copyKey() {
+  const key = document.getElementById('result-key').textContent;
+  if (key === '—') return;
+  try {
+    await navigator.clipboard.writeText(key);
+    const btn = document.getElementById('copy-btn');
+    btn.classList.add('copied');
+    btn.innerHTML = '<span>✅</span> Key Disalin!';
+    showToast('✅ License key disalin ke clipboard');
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.innerHTML = '<span>📋</span> Salin Key';
+    }, 2500);
+  } catch {
+    showToast('⚠️ Gagal menyalin, salin manual');
+  }
+}
+
+// =============================================
+// HISTORY (localStorage keygen sendiri)
+// =============================================
+function saveHistory(entry) {
+  const history = getHistory();
+  history.unshift(entry);
+  if (history.length > 50) history.length = 50; // max 50 key
+  localStorage.setItem('caseer_keygen_history', JSON.stringify(history));
+}
+
+function getHistory() {
+  try { return JSON.parse(localStorage.getItem('caseer_keygen_history')) || []; }
+  catch { return []; }
+}
+
+function renderHistory() {
+  const list = document.getElementById('history-list');
+  const history = getHistory();
+  if (history.length === 0) {
+    list.innerHTML = '<div class="empty-history">Belum ada key yang digenerate.</div>';
+    return;
+  }
+  list.innerHTML = history.map((h, i) => `
+    <div class="history-item">
+      <div>
+        <div class="history-key">${h.key}</div>
+        <div class="history-info">${h.name} · ${h.type === 'CSRP' ? 'Premium' : h.type === 'CSRE' ? 'Enterprise' : 'Trial'} · ${new Date(h.date).toLocaleDateString('id-ID')}</div>
+      </div>
+      <button class="history-copy" onclick="copyHistoryKey('${h.key}', this)">Salin</button>
+    </div>
+  `).join('');
+}
+
+async function copyHistoryKey(key, btn) {
+  try {
+    await navigator.clipboard.writeText(key);
+    btn.textContent = '✅';
+    showToast('✅ Key disalin');
+    setTimeout(() => { btn.textContent = 'Salin'; }, 1500);
+  } catch { showToast('⚠️ Gagal menyalin'); }
+}
+
+function clearHistory() {
+  if (!confirm('Hapus semua riwayat key? Tindakan ini tidak dapat dibatalkan.')) return;
+  localStorage.removeItem('caseer_keygen_history');
+  renderHistory();
+  showToast('🗑️ Riwayat dihapus');
+}
+
+// =============================================
+// TOGGLE SECRET VISIBILITY
+// =============================================
+function toggleSecret() {
+  const inp = document.getElementById('secret-input');
+  const btn = document.querySelector('.secret-toggle');
+  if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '🙈'; }
+  else { inp.type = 'password'; btn.textContent = '👁'; }
+}
+
+// =============================================
+// TOAST
+// =============================================
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// =============================================
+// INIT
+// =============================================
+function init() {
+  // Populate year select
+  const yearSel = document.getElementById('inp-year');
+  const currentYear = new Date().getFullYear();
+  for (let y = currentYear; y <= currentYear + 5; y++) {
+    const opt = document.createElement('option');
+    opt.value = y;
+    opt.textContent = y;
+    if (y === currentYear) opt.selected = true;
+    yearSel.appendChild(opt);
+  }
+  renderHistory();
+}
+
+// =============================================
+// ⚠️ ALGORITMA — harus sinkron dengan validateKey() di index.html
+// keygen  : HMAC(secret, 'CASEER_SEED_' + TYPE-YEAR-SUFFIX) → checksum 4 digit
+// validate: HMAC(secret, 'CASEER_SEED_' + TYPE-YEAR-SUFFIX) → cocokkan checksum
+// =============================================
+
+init();
+</script>
+</body>
+</html>
